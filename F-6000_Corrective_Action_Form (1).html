@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-6000 — Corrective Action Form | Fontaine Specialized</title>
+<style>
+  :root {
+    --bg:       #F5F6F8;
+    --surface:  #FFFFFF;
+    --surface2: #F0F1F3;
+    --nav:      #1E2A3A;
+    --border:   #E2E4E8;
+    --text:     #1A1A2E;
+    --muted:    #6B7280;
+    --blue:     #2563EB;
+    --green:    #16A34A;
+    --yellow:   #CA8A04;
+    --orange:   #EA580C;
+    --red:      #DC2626;
+    --white:    #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Calibri, sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--nav);
+    color: var(--white);
+    padding: 14px 24px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .page-header h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.02em; }
+  .page-header .sub { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  .btn {
+    padding: 7px 14px;
+    border-radius: 5px;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: var(--blue);  color: var(--white); }
+  .btn-ghost   { background: rgba(255,255,255,0.12); color: var(--white); border: 1px solid rgba(255,255,255,0.25); }
+  .btn-danger  { background: var(--red);   color: var(--white); }
+
+  /* ── CONTENT ── */
+  .content { max-width: 900px; margin: 24px auto; padding: 0 16px 60px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .card-header {
+    background: var(--nav);
+    color: var(--white);
+    padding: 9px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .card-body { padding: 16px; }
+
+  /* ── TOP META ROW ── */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 110px 1fr 1.5fr 1fr 1.5fr;
+    gap: 12px;
+    align-items: end;
+  }
+
+  /* ── FIELD ── */
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .field input, .field textarea, .field select {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 7px 9px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface);
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  .field textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+
+  /* ── TOGGLE PILLS — Internal / Vendor ── */
+  .toggle-group { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
+  .toggle-group label {
+    flex: 1;
+    text-align: center;
+    padding: 7px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    background: var(--surface);
+    transition: background 0.15s, color 0.15s;
+    user-select: none;
+  }
+  .toggle-group input[type="radio"] { display: none; }
+  .toggle-group input[type="radio"]:checked + label {
+    background: var(--blue);
+    color: var(--white);
+  }
+
+  /* ── CHECKBOX ROW ── */
+  .check-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 4px; }
+  .check-item { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .check-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--blue); cursor: pointer; }
+  .check-item span { font-size: 13px; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+
+  /* ── ROOT CAUSE CATEGORIES ── */
+  .cat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .cat-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    user-select: none;
+  }
+  .cat-chip input[type="radio"] { display: none; }
+  .cat-chip:has(input:checked) {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: var(--white);
+  }
+
+  /* ── 5-WHY TABLE ── */
+  .why-table { width: 100%; border-collapse: collapse; }
+  .why-table th, .why-table td { border: 1px solid var(--border); padding: 8px 10px; }
+  .why-table th {
+    background: var(--surface2);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    width: 1%;
+  }
+  .why-table .step-num {
+    background: var(--nav);
+    color: var(--white);
+    font-weight: 700;
+    text-align: center;
+    width: 50px;
+  }
+  .why-table .prompt-cell {
+    background: var(--surface2);
+    font-weight: 700;
+    color: var(--blue);
+    font-style: italic;
+    width: 80px;
+    text-align: center;
+  }
+  .why-table input[type="text"] {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: transparent;
+    padding: 2px 0;
+  }
+  .why-table input[type="text"]:focus { border-bottom: 2px solid var(--blue); }
+  .why-table .root-cause-row td {
+    background: rgba(37,99,235,0.06);
+    font-weight: 600;
+  }
+  .why-table .root-cause-label {
+    background: var(--blue) !important;
+    color: var(--white);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    text-align: center;
+    padding: 8px 12px;
+  }
+
+  /* ── ACTION ITEMS ── */
+  .action-block { margin-bottom: 16px; }
+  .action-block-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .action-block-label .badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1px 8px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .action-list { display: flex; flex-direction: column; gap: 8px; }
+  .action-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+  }
+  .action-item textarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text);
+    resize: none;
+    min-height: 36px;
+    line-height: 1.5;
+    outline: none;
+  }
+  .action-item textarea:focus { border-bottom: 1px solid var(--blue); }
+  .action-item .remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .action-item .remove-btn:hover { color: var(--red); }
+  .add-action-btn {
+    margin-top: 8px;
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s;
+  }
+  .add-action-btn:hover { background: var(--surface2); }
+
+  /* ── ATTACHMENT ZONE ── */
+  .attach-zone {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .attach-zone:hover, .attach-zone.drag-over {
+    border-color: var(--blue);
+    background: rgba(37,99,235,0.04);
+  }
+  .attach-zone .attach-icon { font-size: 28px; margin-bottom: 8px; }
+  .attach-zone p { color: var(--muted); font-size: 12px; }
+  .attach-zone p strong { color: var(--blue); }
+  .attach-list { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .attach-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .attach-item .file-name { flex: 1; font-weight: 500; }
+  .attach-item .file-size { color: var(--muted); }
+  .attach-item .remove-file {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 14px; padding: 0 2px;
+    transition: color 0.15s;
+  }
+  .attach-item .remove-file:hover { color: var(--red); }
+
+  /* ── APPROVAL GRID ── */
+  .approval-grid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    table-layout: fixed;
+  }
+  .approval-grid th {
+    background: var(--surface2);
+    padding: 6px 4px;
+    border: 1px solid var(--border);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+  .approval-grid th:first-child { width: 90px; }
+  .approval-grid td {
+    border: 1px solid var(--border);
+    padding: 6px 4px;
+    vertical-align: middle;
+    text-align: center;
+  }
+  .approval-grid .row-label {
+    text-align: left;
+    font-weight: 700;
+    white-space: nowrap;
+    font-size: 12px;
+    padding-left: 8px;
+  }
+  .approval-grid input[type="text"],
+  .approval-grid input[type="date"] {
+    border: none;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    font-family: inherit;
+    font-size: 11px;
+    width: 100%;
+    padding: 2px 0;
+    text-align: center;
+    color: var(--text);
+    outline: none;
+  }
+  .approval-grid input:focus { border-bottom-color: var(--blue); }
+
+  /* Disposition toggle — stacked vertically */
+  .disposition-cell { display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
+  .disp-btn {
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    color: var(--muted);
+    width: 100%;
+    text-align: center;
+  }
+  .disp-btn.approved { background: var(--green); color: var(--white); border-color: var(--green); }
+  .disp-btn.rejected { background: var(--red);   color: var(--white); border-color: var(--red); }
+  .disp-btn.na       { background: var(--muted); color: var(--white); border-color: var(--muted); }
+
+  /* When a column is N/A — dim sig cell and date */
+  .sig-cell.na-state { background: var(--surface2); }
+  .sig-cell.na-state .sig-input  { pointer-events: none; opacity: 0.35; }
+  .sig-cell.na-state .sig-display { opacity: 0.35; }
+  .sig-cell.na-state .na-stamp {
+    display: flex !important;
+  }
+  .na-stamp {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 0 2px;
+  }
+  td.date-cell.na-state input { pointer-events: none; opacity: 0.35; }
+
+  /* Notes row */
+  .notes-row td { padding: 10px; }
+  .notes-row textarea {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 7px 9px;
+    font-size: 12px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface);
+    width: 100%;
+    min-height: 56px;
+    resize: vertical;
+    outline: none;
+  }
+  .notes-row textarea:focus { border-color: var(--blue); }
+
+  /* ── FOOTER ── */
+  .form-footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  /* ── REV HISTORY ── */
+  .rev-history {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-top: 24px;
+    overflow: hidden;
+  }
+  .rev-history-header {
+    background: var(--surface2);
+    padding: 9px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+  }
+  .rev-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .rev-table th {
+    background: var(--surface2);
+    padding: 7px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+  }
+  .rev-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .rev-table .rev-current td { background: rgba(37,99,235,0.05); font-weight: 600; }
+  .rev-note {
+    padding: 10px 16px;
+    font-size: 11px;
+    color: var(--muted);
+    background: #FFFBEB;
+    border-top: 1px solid #FDE68A;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; font-size: 11px; }
+    .page-header { background: #1E2A3A !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .header-actions { display: none; }
+    .card-header { background: #1E2A3A !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card { page-break-inside: avoid; }
+    .attach-zone { display: none; }
+    .rev-history { display: none; }
+    .btn { display: none; }
+    .remove-btn, .remove-file, .add-action-btn { display: none; }
+    .cat-chip:has(input:checked) { background: #2563EB !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .form-footer { display: block; }
+    .sig-input { display: none; }
+    .sig-cell { border-bottom: 1px solid #ccc; }
+    @page { margin: 14mm 12mm; }
+  }
+
+  @media (max-width: 600px) {
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+    .cat-grid { gap: 6px; }
+    .content { padding: 0 10px 40px; }
+  }
+
+  /* ── SIGNATURE CELLS ── */
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+
+  .sig-cell {
+    position: relative;
+    min-height: 52px;
+    padding: 4px 6px !important;
+  }
+  .sig-input {
+    border: none !important;
+    border-bottom: 1px dashed var(--border) !important;
+    background: transparent !important;
+    font-family: inherit !important;
+    font-size: 12px !important;
+    width: 100% !important;
+    padding: 4px 2px !important;
+    text-align: center !important;
+    color: var(--muted) !important;
+    outline: none !important;
+    transition: border-color 0.15s !important;
+    position: relative;
+    z-index: 2;
+  }
+  .sig-input:focus { border-bottom-color: var(--blue) !important; }
+  .sig-display {
+    font-family: 'Dancing Script', cursive;
+    font-size: 22px;
+    color: #1a3a6e;
+    text-align: center;
+    line-height: 1.2;
+    padding: 4px 2px 2px;
+    min-height: 34px;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sig-display.empty { min-height: 34px; }
+
+  /* ── STATUS BADGE in header ── */
+  .car-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1.5px solid;
+  }
+  .status-open   { background: rgba(234,88,12,0.15); color: var(--orange); border-color: var(--orange); }
+  .status-closed { background: rgba(22,163,74,0.15);  color: var(--green);  border-color: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- ══ PAGE HEADER ══ -->
+<div class="page-header">
+  <div>
+    <h1>F-6000 — Corrective Action Form</h1>
+    <div class="sub">Fontaine Specialized &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Rev. 8 &nbsp;|&nbsp; 5/11/2026</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+    <span id="save-indicator" style="font-size:11px;color:rgba(255,255,255,0.5);white-space:nowrap;"></span>
+    <div class="header-actions">
+      <button class="btn btn-ghost" onclick="clearForm()">⟳ New CAR</button>
+      <button class="btn btn-ghost" onclick="downloadJSON()">⤓ Export JSON</button>
+      <button class="btn btn-primary" onclick="window.print()">⎙ Print / PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ══ TOP META ══ -->
+  <div class="card">
+    <div class="card-body">
+      <div class="meta-grid">
+        <div class="field">
+          <label>CAR #</label>
+          <input type="text" id="f-car" placeholder="e.g. CAR-0042">
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="f-date">
+        </div>
+        <div class="field">
+          <label>Requested By</label>
+          <input type="text" id="f-requestedby" placeholder="Name / dept.">
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <div class="toggle-group">
+            <input type="radio" name="type" id="t-internal" value="Internal" checked>
+            <label for="t-internal">Internal</label>
+            <input type="radio" name="type" id="t-vendor" value="Vendor">
+            <label for="t-vendor">Vendor</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Assigned To</label>
+          <input type="text" id="f-assignedto" placeholder="Name / team">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 1 — PROBLEM DEFINITION ══ -->
+  <div class="card">
+    <div class="card-header">Section 1 — Problem Definition</div>
+    <div class="card-body">
+      <div class="field" style="margin-bottom:14px;">
+        <label>Define the Problem <span style="font-weight:400;color:var(--muted);text-transform:none;">(be specific — who, what, where, when)</span></label>
+        <textarea id="f-problem" placeholder="Describe the problem in detail…" style="min-height:90px;"></textarea>
+      </div>
+
+      <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;">
+        <div>
+          <div class="section-label" style="margin-bottom:6px;">Recurring Problem?</div>
+          <div class="check-row">
+            <label class="check-item">
+              <input type="checkbox" id="recurring-yes" onchange="handleRecurring('yes')">
+              <span>Yes</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" id="recurring-no" onchange="handleRecurring('no')">
+              <span>No</span>
+            </label>
+          </div>
+        </div>
+        <div style="flex:1;min-width:260px;">
+          <div class="section-label" style="margin-bottom:6px;">Could this problem occur elsewhere?</div>
+          <div class="check-row" style="margin-bottom:8px;">
+            <label class="check-item">
+              <input type="checkbox" id="elsewhere-yes" onchange="handleElsewhere('yes')">
+              <span>Yes</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" id="elsewhere-no" onchange="handleElsewhere('no')">
+              <span>No</span>
+            </label>
+          </div>
+          <div class="field" id="elsewhere-spec-row" style="display:none;">
+            <label>If YES, specify</label>
+            <input type="text" id="f-elsewhere-spec" placeholder="Describe where else this could occur…">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2 — ROOT CAUSE ANALYSIS ══ -->
+  <div class="card">
+    <div class="card-header">Section 2 — Root Cause Analysis (5-Why)</div>
+    <div class="card-body">
+
+      <div class="section-label">Root Cause Category</div>
+      <div class="cat-grid">
+        <label class="cat-chip"><input type="radio" name="rcc" value="Design"> Design</label>
+        <label class="cat-chip"><input type="radio" name="rcc" value="Equipment"> Equipment</label>
+        <label class="cat-chip"><input type="radio" name="rcc" value="Process/Procedure/Documentation"> Process / Procedure / Documentation</label>
+        <label class="cat-chip"><input type="radio" name="rcc" value="Supplier"> Supplier</label>
+        <label class="cat-chip"><input type="radio" name="rcc" value="Training"> Training</label>
+        <label class="cat-chip"><input type="radio" name="rcc" value="Process Control"> Process Control</label>
+        <label class="cat-chip"><input type="radio" name="rcc" value="Process Variability"> Process Variability</label>
+        <label class="cat-chip" id="chip-cannot" title="Justification required in Step 5"><input type="radio" name="rcc" value="Cannot Determine"> Cannot Determine ⚠</label>
+      </div>
+
+      <div style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+        <strong style="color:var(--blue);">How to complete the 5-Why:</strong> Using the problem from Section 1, ask <em>"Why did this happen?"</em> and record the answer in Step 1. Use that answer as the input for Step 2, and continue until you reach a process- or system-level cause (usually by Step 4 or 5). <em>Tip: if fixing that answer would solve the problem, you have not gone deep enough — keep asking why.</em>
+      </div>
+
+      <table class="why-table">
+        <tbody>
+          <tr>
+            <td class="step-num">1</td>
+            <td class="prompt-cell">WHY?</td>
+            <td><input type="text" id="why1" placeholder="Answer to first why…"></td>
+          </tr>
+          <tr>
+            <td class="step-num">2</td>
+            <td class="prompt-cell">WHY?</td>
+            <td><input type="text" id="why2" placeholder="Answer to second why…"></td>
+          </tr>
+          <tr>
+            <td class="step-num">3</td>
+            <td class="prompt-cell">WHY?</td>
+            <td><input type="text" id="why3" placeholder="Answer to third why…"></td>
+          </tr>
+          <tr>
+            <td class="step-num">4</td>
+            <td class="prompt-cell">WHY?</td>
+            <td><input type="text" id="why4" placeholder="Answer to fourth why…"></td>
+          </tr>
+          <tr>
+            <td class="step-num">5</td>
+            <td class="prompt-cell">WHY?</td>
+            <td><input type="text" id="why5" placeholder="Answer to fifth why…"></td>
+          </tr>
+          <tr class="root-cause-row">
+            <td class="root-cause-label" colspan="2">Root Cause Statement</td>
+            <td><input type="text" id="root-cause-stmt" placeholder="Summarize the confirmed root cause…"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3 — CORRECTIVE & PREVENTATIVE ACTIONS ══ -->
+  <div class="card">
+    <div class="card-header">Section 3 — Corrective &amp; Preventative Actions</div>
+    <div class="card-body">
+
+      <div class="action-block">
+        <div class="action-block-label">
+          Short-Term Corrective Action
+          <span style="color:var(--muted);font-size:10px;font-weight:400;text-transform:none;">(corrects the immediate issue — minimum 1 required)</span>
+          <span class="badge" id="st-count">0 added</span>
+        </div>
+        <div class="action-list" id="st-list"></div>
+        <button class="add-action-btn" onclick="addAction('st')">+ Add Short-Term Action</button>
+      </div>
+
+      <div class="action-block" style="margin-top:20px;">
+        <div class="action-block-label">
+          Long-Term Preventative Action
+          <span style="color:var(--muted);font-size:10px;font-weight:400;text-transform:none;">(ensures recurrence is prevented — minimum 1 required)</span>
+          <span class="badge" id="lt-count">0 added</span>
+        </div>
+        <div class="action-list" id="lt-list"></div>
+        <button class="add-action-btn" onclick="addAction('lt')">+ Add Long-Term Action</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 4 — ATTACHMENTS ══ -->
+  <div class="card">
+    <div class="card-header">Section 4 — Attachments / Photos</div>
+    <div class="card-body">
+      <div class="attach-zone" id="attach-zone"
+           onclick="document.getElementById('file-input').click()"
+           ondragover="e=>{e.preventDefault();this.classList.add('drag-over');}"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        <div class="attach-icon">📎</div>
+        <p><strong>Click to attach</strong> or drag and drop files here</p>
+        <p style="margin-top:4px;">Photos, sketches, supporting documents</p>
+        <input type="file" id="file-input" multiple style="display:none;" onchange="handleFiles(this.files)">
+      </div>
+      <div class="attach-list" id="attach-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 5 — APPROVAL / DISPOSITION ══ -->
+  <div class="card">
+    <div class="card-header">Section 5 — Approval / Disposition</div>
+    <div class="card-body">
+      <table class="approval-grid">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Disposition</th>
+            <th>Operation</th>
+            <th>Engineering</th>
+            <th>Manufacturing</th>
+            <th>QA</th>
+            <th>Purchasing *</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">Decision</td>
+            <td><div class="disposition-cell"><button class="disp-btn" id="d-ops-a" onclick="setDisp('ops','approved')">✓ Approved</button><button class="disp-btn" id="d-ops-r" onclick="setDisp('ops','rejected')">✗ Rejected</button><button class="disp-btn" id="d-ops-n" onclick="setDisp('ops','na')">— N/A</button></div></td>
+            <td><div class="disposition-cell"><button class="disp-btn" id="d-eng-a" onclick="setDisp('eng','approved')">✓ Approved</button><button class="disp-btn" id="d-eng-r" onclick="setDisp('eng','rejected')">✗ Rejected</button><button class="disp-btn" id="d-eng-n" onclick="setDisp('eng','na')">— N/A</button></div></td>
+            <td><div class="disposition-cell"><button class="disp-btn" id="d-mfg-a" onclick="setDisp('mfg','approved')">✓ Approved</button><button class="disp-btn" id="d-mfg-r" onclick="setDisp('mfg','rejected')">✗ Rejected</button><button class="disp-btn" id="d-mfg-n" onclick="setDisp('mfg','na')">— N/A</button></div></td>
+            <td><div class="disposition-cell"><button class="disp-btn" id="d-qa-a" onclick="setDisp('qa','approved')">✓ Approved</button><button class="disp-btn" id="d-qa-r" onclick="setDisp('qa','rejected')">✗ Rejected</button><button class="disp-btn" id="d-qa-n" onclick="setDisp('qa','na')">— N/A</button></div></td>
+            <td><div class="disposition-cell"><button class="disp-btn" id="d-pur-a" onclick="setDisp('pur','approved')">✓ Approved</button><button class="disp-btn" id="d-pur-r" onclick="setDisp('pur','rejected')">✗ Rejected</button><button class="disp-btn" id="d-pur-n" onclick="setDisp('pur','na')">— N/A</button></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Signature</td>
+            <td class="sig-cell" id="sc-ops">
+              <div class="na-stamp" id="na-ops">N / A</div>
+              <div class="sig-display empty" id="sig-ops"></div>
+              <input class="sig-input" type="text" id="n-ops" placeholder="Type name to sign" oninput="updateSig('ops',this.value)">
+            </td>
+            <td class="sig-cell" id="sc-eng">
+              <div class="na-stamp" id="na-eng">N / A</div>
+              <div class="sig-display empty" id="sig-eng"></div>
+              <input class="sig-input" type="text" id="n-eng" placeholder="Type name to sign" oninput="updateSig('eng',this.value)">
+            </td>
+            <td class="sig-cell" id="sc-mfg">
+              <div class="na-stamp" id="na-mfg">N / A</div>
+              <div class="sig-display empty" id="sig-mfg"></div>
+              <input class="sig-input" type="text" id="n-mfg" placeholder="Type name to sign" oninput="updateSig('mfg',this.value)">
+            </td>
+            <td class="sig-cell" id="sc-qa">
+              <div class="na-stamp" id="na-qa">N / A</div>
+              <div class="sig-display empty" id="sig-qa"></div>
+              <input class="sig-input" type="text" id="n-qa" placeholder="Type name to sign" oninput="updateSig('qa',this.value)">
+            </td>
+            <td class="sig-cell" id="sc-pur">
+              <div class="na-stamp" id="na-pur">N / A</div>
+              <div class="sig-display empty" id="sig-pur"></div>
+              <input class="sig-input" type="text" id="n-pur" placeholder="Type name to sign" oninput="updateSig('pur',this.value)">
+            </td>
+          </tr>
+          <tr>
+            <td class="row-label">Date</td>
+            <td class="date-cell" id="dc-ops"><input type="date" id="dt-ops"></td>
+            <td class="date-cell" id="dc-eng"><input type="date" id="dt-eng"></td>
+            <td class="date-cell" id="dc-mfg"><input type="date" id="dt-mfg"></td>
+            <td class="date-cell" id="dc-qa"><input type="date" id="dt-qa"></td>
+            <td class="date-cell" id="dc-pur"><input type="date" id="dt-pur"></td>
+          </tr>
+          <tr class="notes-row">
+            <td class="row-label" style="vertical-align:top;padding-top:12px;">Notes</td>
+            <td colspan="5">
+              <textarea id="approval-notes" placeholder="Any additional notes or conditions…"></textarea>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px;">* Purchasing approval required for supplier-related CARs only.</div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="form-footer">
+    F-6000 &nbsp;|&nbsp; Rev. 8 &nbsp;|&nbsp; Date Revised: 5/11/2026 &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Approver: Ops. Manager &nbsp;|&nbsp; Reviser: Drew Anderson
+  </div>
+
+  <!-- ══ REVISION HISTORY ══ -->
+  <div class="rev-history">
+    <div class="rev-history-header">Document Revision History</div>
+    <table class="rev-table">
+      <thead>
+        <tr>
+          <th>Rev</th>
+          <th>Date</th>
+          <th>Description of Change</th>
+          <th>Author</th>
+          <th>Approved By</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="rev-current">
+          <td>8</td>
+          <td>05/11/2026</td>
+          <td>Current release — converted to interactive HTML tool</td>
+          <td>Drew Anderson</td>
+          <td>Ops. Manager</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="rev-note">
+      ⚠ This is a controlled document. Do not modify without QA approval. Store the master file in SharePoint; replace it when a new revision is issued.
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+  const SAVE_KEY = 'F6000_draft';
+
+  // ── Save indicator ──
+  function setSaveIndicator(msg, color) {
+    const el = document.getElementById('save-indicator');
+    el.textContent = msg;
+    el.style.color = color || 'rgba(255,255,255,0.5)';
+  }
+
+  // ── Collect all form data into a plain object ──
+  function collectData() {
+    const getRadio = (name) => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; };
+    const stItems = [], ltItems = [];
+    document.querySelectorAll('#st-list .action-item textarea').forEach(ta => stItems.push(ta.value));
+    document.querySelectorAll('#lt-list .action-item textarea').forEach(ta => ltItems.push(ta.value));
+    return {
+      header: {
+        carNumber:   document.getElementById('f-car').value,
+        date:        document.getElementById('f-date').value,
+        requestedBy: document.getElementById('f-requestedby').value,
+        type:        getRadio('type'),
+        assignedTo:  document.getElementById('f-assignedto').value,
+      },
+      section1: {
+        problemDefinition: document.getElementById('f-problem').value,
+        recurringYes:  document.getElementById('recurring-yes').checked,
+        recurringNo:   document.getElementById('recurring-no').checked,
+        elsewhereYes:  document.getElementById('elsewhere-yes').checked,
+        elsewhereNo:   document.getElementById('elsewhere-no').checked,
+        elsewhereSpec: document.getElementById('f-elsewhere-spec').value,
+      },
+      section2: {
+        rootCauseCategory: getRadio('rcc'),
+        why1: document.getElementById('why1').value,
+        why2: document.getElementById('why2').value,
+        why3: document.getElementById('why3').value,
+        why4: document.getElementById('why4').value,
+        why5: document.getElementById('why5').value,
+        rootCauseStatement: document.getElementById('root-cause-stmt').value,
+      },
+      section3: { shortTermActions: stItems, longTermActions: ltItems },
+      section5: {
+        dispositions: { ...dispState },
+        names: {
+          ops: document.getElementById('n-ops').value,
+          eng: document.getElementById('n-eng').value,
+          mfg: document.getElementById('n-mfg').value,
+          qa:  document.getElementById('n-qa').value,
+          pur: document.getElementById('n-pur').value,
+        },
+        dates: {
+          ops: document.getElementById('dt-ops').value,
+          eng: document.getElementById('dt-eng').value,
+          mfg: document.getElementById('dt-mfg').value,
+          qa:  document.getElementById('dt-qa').value,
+          pur: document.getElementById('dt-pur').value,
+        },
+        notes: document.getElementById('approval-notes').value,
+      },
+      savedAt: new Date().toISOString(),
+    };
+  }
+
+  // ── Save to localStorage ──
+  let saveTimer = null;
+  function scheduleSave() {
+    setSaveIndicator('Unsaved changes…', 'rgba(255,200,100,0.8)');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveNow, 1500); // debounce 1.5s after last keystroke
+  }
+
+  function saveNow() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(collectData()));
+      const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setSaveIndicator(`✓ Draft saved ${t}`, 'rgba(100,220,140,0.85)');
+    } catch(e) {
+      setSaveIndicator('⚠ Could not save', 'rgba(255,120,120,0.9)');
+    }
+  }
+
+  // ── Restore from localStorage ──
+  function restoreData(d) {
+    if (!d) return;
+
+    // Header
+    const h = d.header || {};
+    if (h.carNumber)   document.getElementById('f-car').value = h.carNumber;
+    if (h.date)        document.getElementById('f-date').value = h.date;
+    if (h.requestedBy) document.getElementById('f-requestedby').value = h.requestedBy;
+    if (h.assignedTo)  document.getElementById('f-assignedto').value = h.assignedTo;
+    if (h.type) {
+      const r = document.querySelector(`input[name="type"][value="${h.type}"]`);
+      if (r) r.checked = true;
+    }
+
+    // Section 1
+    const s1 = d.section1 || {};
+    if (s1.problemDefinition) document.getElementById('f-problem').value = s1.problemDefinition;
+    if (s1.recurringYes)  { document.getElementById('recurring-yes').checked = true; }
+    if (s1.recurringNo)   { document.getElementById('recurring-no').checked = true; }
+    if (s1.elsewhereYes)  {
+      document.getElementById('elsewhere-yes').checked = true;
+      document.getElementById('elsewhere-spec-row').style.display = 'block';
+    }
+    if (s1.elsewhereNo)   { document.getElementById('elsewhere-no').checked = true; }
+    if (s1.elsewhereSpec) document.getElementById('f-elsewhere-spec').value = s1.elsewhereSpec;
+
+    // Section 2
+    const s2 = d.section2 || {};
+    if (s2.rootCauseCategory) {
+      const r = document.querySelector(`input[name="rcc"][value="${s2.rootCauseCategory}"]`);
+      if (r) r.checked = true;
+    }
+    ['why1','why2','why3','why4','why5'].forEach(id => {
+      if (s2[id]) document.getElementById(id).value = s2[id];
+    });
+    if (s2.rootCauseStatement) document.getElementById('root-cause-stmt').value = s2.rootCauseStatement;
+
+    // Section 3 — rebuild action rows
+    const s3 = d.section3 || {};
+    (s3.shortTermActions || []).forEach(text => { addAction('st'); const items = document.querySelectorAll('#st-list .action-item textarea'); items[items.length-1].value = text; });
+    (s3.longTermActions  || []).forEach(text => { addAction('lt'); const items = document.querySelectorAll('#lt-list .action-item textarea'); items[items.length-1].value = text; });
+
+    // Section 5
+    const s5 = d.section5 || {};
+    const depts = ['ops','eng','mfg','qa','pur'];
+    if (s5.dispositions) {
+      depts.forEach(dept => { if (s5.dispositions[dept]) setDisp(dept, s5.dispositions[dept]); });
+    }
+    if (s5.names) depts.forEach(dept => {
+      const v = s5.names[dept];
+      if (v) { document.getElementById(`n-${dept}`).value = v; updateSig(dept, v); }
+    });
+    if (s5.dates) depts.forEach(dept => {
+      if (s5.dates[dept]) document.getElementById(`dt-${dept}`).value = s5.dates[dept];
+    });
+    if (s5.notes) document.getElementById('approval-notes').value = s5.notes;
+
+    // Show when it was last saved
+    if (d.savedAt) {
+      const t = new Date(d.savedAt).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+      setSaveIndicator(`Draft restored — last saved ${t}`, 'rgba(100,220,140,0.85)');
+    }
+  }
+
+  // ── Signature live-render ──
+  function updateSig(dept, name) {
+    const el = document.getElementById(`sig-${dept}`);
+    el.textContent = name.trim();
+    el.classList.toggle('empty', !name.trim());
+  }
+
+  // ── Mutual-exclusive checkboxes ──
+  function handleRecurring(val) {
+    if (val === 'yes') { document.getElementById('recurring-no').checked = false; }
+    else               { document.getElementById('recurring-yes').checked = false; }
+    scheduleSave();
+  }
+  function handleElsewhere(val) {
+    if (val === 'yes') {
+      document.getElementById('elsewhere-no').checked = false;
+      document.getElementById('elsewhere-spec-row').style.display = 'block';
+    } else {
+      document.getElementById('elsewhere-yes').checked = false;
+      document.getElementById('elsewhere-spec-row').style.display = 'none';
+    }
+    scheduleSave();
+  }
+
+  // ── Action items ──
+  const actionCounts = { st: 0, lt: 0 };
+
+  function addAction(type) {
+    actionCounts[type]++;
+    const num = actionCounts[type];
+    const listEl = document.getElementById(`${type}-list`);
+    const item = document.createElement('div');
+    item.className = 'action-item';
+    item.id = `${type}-item-${num}`;
+    item.innerHTML = `
+      <textarea placeholder="Describe the action, responsible party, and target completion date…" rows="2" id="${type}-text-${num}" oninput="scheduleSave()"></textarea>
+      <button class="remove-btn" onclick="removeAction('${type}',${num})" title="Remove">×</button>
+    `;
+    listEl.appendChild(item);
+    updateCount(type);
+    scheduleSave();
+    item.querySelector('textarea').focus();
+  }
+
+  function removeAction(type, num) {
+    const el = document.getElementById(`${type}-item-${num}`);
+    if (el) el.remove();
+    updateCount(type);
+    scheduleSave();
+  }
+
+  function updateCount(type) {
+    const count = document.getElementById(`${type}-list`).querySelectorAll('.action-item').length;
+    document.getElementById(`${type}-count`).textContent = count === 0 ? '0 added' : `${count} added`;
+  }
+
+  // ── Disposition buttons ──
+  const dispState = {};
+  function setDisp(dept, val) {
+    if (dispState[dept] === val) val = '';
+    dispState[dept] = val;
+    const aBtn = document.getElementById(`d-${dept}-a`);
+    const rBtn = document.getElementById(`d-${dept}-r`);
+    const nBtn = document.getElementById(`d-${dept}-n`);
+    aBtn.className = 'disp-btn' + (val === 'approved' ? ' approved' : '');
+    rBtn.className = 'disp-btn' + (val === 'rejected' ? ' rejected' : '');
+    nBtn.className = 'disp-btn' + (val === 'na'       ? ' na'       : '');
+    const isNA = val === 'na';
+    document.getElementById(`sc-${dept}`).classList.toggle('na-state', isNA);
+    document.getElementById(`dc-${dept}`).classList.toggle('na-state', isNA);
+    scheduleSave();
+  }
+
+  // ── Attachments ──
+  const attachedFiles = [];
+  function handleFiles(files) {
+    Array.from(files).forEach(f => { attachedFiles.push(f); renderAttach(f); });
+    document.getElementById('file-input').value = '';
+  }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('attach-zone').classList.remove('drag-over');
+    handleFiles(e.dataTransfer.files);
+  }
+  function renderAttach(file) {
+    const list = document.getElementById('attach-list');
+    const item = document.createElement('div');
+    item.className = 'attach-item';
+    const size = file.size < 1024 ? `${file.size} B` :
+                 file.size < 1048576 ? `${(file.size/1024).toFixed(1)} KB` :
+                 `${(file.size/1048576).toFixed(1)} MB`;
+    item.innerHTML = `<span class="file-name">📄 ${file.name}</span><span class="file-size">${size}</span>
+      <button class="remove-file" title="Remove">×</button>`;
+    item.querySelector('.remove-file').onclick = () => {
+      const idx = attachedFiles.indexOf(file);
+      if (idx > -1) attachedFiles.splice(idx, 1);
+      item.remove();
+    };
+    list.appendChild(item);
+  }
+
+  // ── Export JSON ──
+  function downloadJSON() {
+    const data = { form: 'F-6000 Corrective Action Form', rev: 8, exported: new Date().toISOString(), ...collectData() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const carNum = document.getElementById('f-car').value.replace(/\s+/g,'_') || 'draft';
+    const date   = document.getElementById('f-date').value || new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = `F-6000_${carNum}_${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── Clear Form ──
+  function clearForm() {
+    if (!confirm('Start a new CAR? This will clear all fields and erase the saved draft.')) return;
+    document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => el.value = '');
+    document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+    document.getElementById('t-internal').checked = true;
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+    document.getElementById('elsewhere-spec-row').style.display = 'none';
+    document.getElementById('st-list').innerHTML = '';
+    document.getElementById('lt-list').innerHTML = '';
+    updateCount('st'); updateCount('lt');
+    document.getElementById('attach-list').innerHTML = '';
+    attachedFiles.length = 0;
+    Object.keys(dispState).forEach(k => delete dispState[k]);
+    ['ops','eng','mfg','qa','pur'].forEach(dept => {
+      document.getElementById(`d-${dept}-a`).className = 'disp-btn';
+      document.getElementById(`d-${dept}-r`).className = 'disp-btn';
+      document.getElementById(`d-${dept}-n`).className = 'disp-btn';
+      document.getElementById(`sc-${dept}`).classList.remove('na-state');
+      document.getElementById(`dc-${dept}`).classList.remove('na-state');
+      document.getElementById(`sig-${dept}`).textContent = '';
+    });
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    localStorage.removeItem(SAVE_KEY);
+    setSaveIndicator('Draft cleared', 'rgba(255,255,255,0.4)');
+    addAction('st');
+    addAction('lt');
+  }
+
+  // ── Wire up all inputs to autosave ──
+  document.addEventListener('input', scheduleSave);
+  document.addEventListener('change', scheduleSave);
+
+  // ── Init: restore draft or start fresh ──
+  const saved = localStorage.getItem(SAVE_KEY);
+  if (saved) {
+    try {
+      restoreData(JSON.parse(saved));
+    } catch(e) {
+      document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+      addAction('st');
+      addAction('lt');
+    }
+  } else {
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    addAction('st');
+    addAction('lt');
+  }
+</script>
+</body>
+</html>
