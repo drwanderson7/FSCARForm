@@ -116,7 +116,7 @@
     border-color: var(--blue);
     box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
   }
-  .field textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+  .field textarea { resize: none; min-height: 36px; line-height: 1.5; overflow: hidden; }
 
   /* ── TOGGLE PILLS — Internal / Vendor ── */
   .toggle-group { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
@@ -452,8 +452,9 @@
     color: var(--text);
     background: var(--surface);
     width: 100%;
-    min-height: 56px;
-    resize: vertical;
+    min-height: 36px;
+    resize: none;
+    overflow: hidden;
     outline: none;
   }
   .notes-row textarea:focus { border-color: var(--blue); }
@@ -555,8 +556,26 @@
       min-height: 18px;
     }
     .why-table .root-cause-label { display: table-cell !important; }
-    /* Why table */ 
-    @page { margin: 10mm 10mm; }
+    /* Action items — keep each item on one page, let the block flow */
+    .action-item { page-break-inside: avoid; break-inside: avoid; }
+    .action-block-label { page-break-after: avoid; break-after: avoid; }
+    /* Keep section header with at least the first item below it */
+    .card-header { page-break-after: avoid; break-after: avoid; }
+    /* Action textarea — same fix as why table: show content as plain text */
+    .action-item textarea { display: none !important; }
+    .action-item::after {
+      content: attr(data-print-val);
+      display: block;
+      font-size: 11px;
+      font-family: 'Segoe UI', Calibri, sans-serif;
+      color: #1A1A2E;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      flex: 1;
+    }
+    /* Tip box hidden on print to save space */
+    .why-tip-box { display: none; }
   }
 
   @media (max-width: 600px) {
@@ -681,7 +700,7 @@
     <div class="card-body">
       <div class="field" style="margin-bottom:14px;">
         <label>Define the Problem <span style="font-weight:400;color:var(--muted);text-transform:none;">(be specific — who, what, where, when)</span></label>
-        <textarea id="f-problem" placeholder="Describe the problem in detail…" style="min-height:72px;" oninput="autoResize(this)"></textarea>
+        <textarea id="f-problem" placeholder="Describe the problem in detail…" oninput="autoResize(this)"></textarea>
       </div>
 
       <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;">
@@ -884,7 +903,7 @@
           <tr class="notes-row">
             <td class="row-label" style="vertical-align:top;padding-top:12px;">Notes</td>
             <td colspan="5">
-              <textarea id="approval-notes" placeholder="Any additional notes or conditions…"></textarea>
+              <textarea id="approval-notes" placeholder="Any additional notes or conditions…" oninput="autoResize(this)"></textarea>
             </td>
           </tr>
         </tbody>
@@ -1082,8 +1101,9 @@
     el.style.height = el.scrollHeight + 'px';
   }
   function autoResizeAll() {
-    document.querySelectorAll('.why-table textarea, #f-problem').forEach(el => {
+    document.querySelectorAll('textarea').forEach(el => {
       autoResize(el);
+      // sync data-print-val for why table and action items
       if (el.parentElement) el.parentElement.setAttribute('data-print-val', el.value);
     });
   }
@@ -1123,7 +1143,7 @@
     item.className = 'action-item';
     item.id = `${type}-item-${num}`;
     item.innerHTML = `
-      <textarea placeholder="Describe the action, responsible party, and target completion date…" rows="2" id="${type}-text-${num}" oninput="scheduleSave()"></textarea>
+      <textarea placeholder="Describe the action, responsible party, and target completion date…" rows="2" id="${type}-text-${num}" oninput="scheduleSave();this.parentElement.setAttribute('data-print-val',this.value)"></textarea>
       <button class="remove-btn" onclick="removeAction('${type}',${num})" title="Remove">×</button>
     `;
     listEl.appendChild(item);
@@ -1273,8 +1293,11 @@
     addAction('lt');
   }
 
-  // ── Wire up all inputs to autosave ──
-  document.addEventListener('input', scheduleSave);
+  // ── Wire up all inputs to autosave + autoResize ──
+  document.addEventListener('input', e => {
+    scheduleSave();
+    if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
+  });
   document.addEventListener('change', scheduleSave);
 
   // ── Init: restore draft or start fresh ──
