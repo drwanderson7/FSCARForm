@@ -222,9 +222,12 @@
     resize: none;
     overflow: hidden;
     line-height: 1.5;
+    height: auto;
     min-height: 28px;
     display: block;
+    box-sizing: border-box;
   }
+  .why-table td:last-child { overflow: visible; }
   .why-table textarea:focus { border-bottom: 2px solid var(--blue); }
   .why-table .root-cause-row td {
     background: rgba(37,99,235,0.06);
@@ -507,24 +510,37 @@
 
   /* ── PRINT ── */
   @media print {
-    body { background: white; font-size: 11px; }
-    .page-header { background: #1E2A3A !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background: white; font-size: 10px; }
+    .page-header { background: #1E2A3A !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 8px 16px 6px; }
     .header-actions { display: none; }
-    .card-header { background: #1E2A3A !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .card { page-break-inside: avoid; }
+    #save-indicator { display: none; }
+    .card-header { background: #1E2A3A !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 6px 12px; font-size: 10px; }
+    .card { margin-bottom: 8px; border-radius: 4px; }
+    .card-body { padding: 10px 12px; }
+    /* Only keep small single-section cards together; let big ones flow */
+    .card-header + .card-body { page-break-inside: auto; }
     .attach-zone { display: none; }
     .rev-history { display: none; }
     .btn { display: none; }
     .remove-btn, .remove-file, .add-action-btn { display: none; }
     .cat-chip:has(input:checked) { background: #2563EB !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .form-footer { display: block; }
-    .card { page-break-inside: avoid; margin-bottom: 10px; }
-    .content { margin: 10px auto; }
+    .content { margin: 8px auto; padding: 0 10px 20px; }
     .sig-input { display: none; }
     .sig-cell { border-bottom: 1px solid #ccc; }
     ::-webkit-input-placeholder { color: transparent !important; }
     ::placeholder { color: transparent !important; }
-    @page { margin: 14mm 12mm; }
+    /* Tighten section 1 */
+    #f-problem { min-height: 40px !important; }
+    /* Why table rows should not break mid-row */
+    .why-table tr { page-break-inside: avoid; }
+    .why-table textarea { overflow: visible !important; height: auto !important; }
+    /* Meta grid tighter */
+    .meta-grid { gap: 8px; }
+    .field input, .field textarea, .field select { padding: 4px 6px; font-size: 11px; }
+    /* Tip box hidden on print to save space */
+    .why-tip-box { display: none; }
+    @page { margin: 10mm 10mm; }
   }
 
   @media (max-width: 600px) {
@@ -600,6 +616,8 @@
     <span id="save-indicator" style="font-size:11px;color:rgba(255,255,255,0.5);white-space:nowrap;"></span>
     <div class="header-actions">
       <button class="btn btn-ghost" onclick="clearForm()">⟳ New CAR</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('json-import-input').click()">⤒ Import JSON</button>
+      <input type="file" id="json-import-input" accept=".json" style="display:none;" onchange="importJSON(this)">
       <button class="btn btn-ghost" onclick="downloadJSON()">⤓ Export JSON</button>
       <button class="btn btn-primary" onclick="window.print()">⎙ Print / PDF</button>
     </div>
@@ -702,7 +720,7 @@
         <label class="cat-chip" id="chip-cannot" title="Justification required in Step 5"><input type="radio" name="rcc" value="Cannot Determine"> Cannot Determine ⚠</label>
       </div>
 
-      <div style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+      <div class="why-tip-box" style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
         <strong style="color:var(--blue);">How to complete the 5-Why:</strong> Using the problem from Section 1, ask <em>"Why did this happen?"</em> and record the answer in Step 1. Use that answer as the input for Step 2, and continue until you reach a process- or system-level cause (usually by Step 4 or 5). <em>Tip: if fixing that answer would solve the problem, you have not gone deep enough — keep asking why.</em>
       </div>
 
@@ -1044,11 +1062,11 @@
 
   // ── Auto-resize textareas ──
   function autoResize(el) {
-    el.style.height = 'auto';
+    el.style.height = '0px';
     el.style.height = el.scrollHeight + 'px';
   }
   function autoResizeAll() {
-    document.querySelectorAll('.why-table textarea').forEach(autoResize);
+    document.querySelectorAll('.why-table textarea, #f-problem').forEach(autoResize);
   }
 
   // ── Signature live-render ──
@@ -1166,6 +1184,47 @@
     URL.revokeObjectURL(url);
   }
 
+  // ── Import JSON ──
+  function importJSON(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        // Wipe current state silently before restoring
+        document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => el.value = '');
+        document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+        document.getElementById('t-internal').checked = true;
+        document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+        document.getElementById('elsewhere-spec-row').style.display = 'none';
+        document.getElementById('st-list').innerHTML = '';
+        document.getElementById('lt-list').innerHTML = '';
+        updateCount('st'); updateCount('lt');
+        Object.keys(dispState).forEach(k => delete dispState[k]);
+        ['ops','eng','mfg','qa','pur'].forEach(dept => {
+          document.getElementById(`d-${dept}-a`).className = 'disp-btn';
+          document.getElementById(`d-${dept}-r`).className = 'disp-btn';
+          document.getElementById(`d-${dept}-n`).className = 'disp-btn';
+          document.getElementById(`sc-${dept}`).classList.remove('na-state');
+          document.getElementById(`dc-${dept}`).classList.remove('na-state');
+          document.getElementById(`sig-${dept}`).textContent = '';
+        });
+        // Restore from imported data
+        restoreData(data);
+        // Save imported data as current draft
+        localStorage.setItem(SAVE_KEY, JSON.stringify({...data, savedAt: new Date().toISOString()}));
+        const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        setSaveIndicator(`✓ Imported & saved ${t}`, 'rgba(100,220,140,0.85)');
+        setTimeout(autoResizeAll, 100);
+      } catch(err) {
+        alert('Could not load file — make sure it is a valid F-6000 JSON export.');
+      }
+      input.value = '';
+    };
+    reader.readAsText(file);
+  }
+
   // ── Clear Form ──
   function clearForm() {
     if (!confirm('Start a new CAR? This will clear all fields and erase the saved draft.')) return;
@@ -1214,6 +1273,8 @@
     addAction('st');
     addAction('lt');
   }
+  // Run after fonts/layout settle
+  setTimeout(autoResizeAll, 100);
 </script>
 </body>
 </html>
