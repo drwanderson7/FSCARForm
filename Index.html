@@ -538,8 +538,24 @@
     /* Meta grid tighter */
     .meta-grid { gap: 8px; }
     .field input, .field textarea, .field select { padding: 4px 6px; font-size: 11px; }
-    /* Tip box hidden on print to save space */
-    .why-tip-box { display: none; }
+    /* Why table — replace textarea rendering with full-height divs on print */
+    .why-table textarea {
+      display: none !important;
+    }
+    .why-table td:last-child::before {
+      content: attr(data-print-val);
+      display: block;
+      font-size: 11px;
+      font-family: 'Segoe UI', Calibri, sans-serif;
+      color: #1A1A2E;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      padding: 2px 0;
+      min-height: 18px;
+    }
+    .why-table .root-cause-label { display: table-cell !important; }
+    /* Why table */ 
     @page { margin: 10mm 10mm; }
   }
 
@@ -729,31 +745,31 @@
           <tr>
             <td class="step-num">1</td>
             <td class="prompt-cell">WHY?</td>
-            <td><textarea id="why1" rows="1" oninput="autoResize(this)" placeholder="Answer to first why…"></textarea></td>
+            <td data-print-val=""><textarea id="why1" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to first why…"></textarea></td>
           </tr>
           <tr>
             <td class="step-num">2</td>
             <td class="prompt-cell">WHY?</td>
-            <td><textarea id="why2" rows="1" oninput="autoResize(this)" placeholder="Answer to second why…"></textarea></td>
+            <td data-print-val=""><textarea id="why2" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to second why…"></textarea></td>
           </tr>
           <tr>
             <td class="step-num">3</td>
             <td class="prompt-cell">WHY?</td>
-            <td><textarea id="why3" rows="1" oninput="autoResize(this)" placeholder="Answer to third why…"></textarea></td>
+            <td data-print-val=""><textarea id="why3" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to third why…"></textarea></td>
           </tr>
           <tr>
             <td class="step-num">4</td>
             <td class="prompt-cell">WHY?</td>
-            <td><textarea id="why4" rows="1" oninput="autoResize(this)" placeholder="Answer to fourth why…"></textarea></td>
+            <td data-print-val=""><textarea id="why4" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to fourth why…"></textarea></td>
           </tr>
           <tr>
             <td class="step-num">5</td>
             <td class="prompt-cell">WHY?</td>
-            <td><textarea id="why5" rows="1" oninput="autoResize(this)" placeholder="Answer to fifth why…"></textarea></td>
+            <td data-print-val=""><textarea id="why5" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to fifth why…"></textarea></td>
           </tr>
           <tr class="root-cause-row">
             <td class="root-cause-label" colspan="2">Root Cause Statement</td>
-            <td><textarea id="root-cause-stmt" rows="1" oninput="autoResize(this)" placeholder="Summarize the confirmed root cause…"></textarea></td>
+            <td data-print-val=""><textarea id="root-cause-stmt" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Summarize the confirmed root cause…"></textarea></td>
           </tr>
         </tbody>
       </table>
@@ -1066,7 +1082,10 @@
     el.style.height = el.scrollHeight + 'px';
   }
   function autoResizeAll() {
-    document.querySelectorAll('.why-table textarea, #f-problem').forEach(autoResize);
+    document.querySelectorAll('.why-table textarea, #f-problem').forEach(el => {
+      autoResize(el);
+      if (el.parentElement) el.parentElement.setAttribute('data-print-val', el.value);
+    });
   }
 
   // ── Signature live-render ──
