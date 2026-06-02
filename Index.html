@@ -250,8 +250,6 @@
     resize: none;
     overflow: hidden;
     line-height: 1.5;
-    min-height: 24px;
-    height: 24px;
     display: block;
     box-sizing: border-box;
   }
@@ -1157,15 +1155,17 @@
   // ── Auto-resize textareas ──
   function autoResize(el) {
     el.style.height = '0px';
-    el.style.height = el.scrollHeight + 'px';
+    el.style.height = Math.max(el.scrollHeight, 24) + 'px';
   }
   function autoResizeAll() {
     document.querySelectorAll('textarea').forEach(el => {
       autoResize(el);
-      // sync data-print-val for why table and action items
       if (el.parentElement) el.parentElement.setAttribute('data-print-val', el.value);
     });
   }
+
+  // Set initial height on why textareas via JS (not CSS) so autoResize can override freely
+  document.querySelectorAll('.why-cell textarea').forEach(el => { el.style.height = '24px'; });
 
   // ── Signature live-render ──
   function updateSig(dept, name) {
