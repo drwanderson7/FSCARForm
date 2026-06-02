@@ -202,12 +202,13 @@
   }
 
   /* ── 5-WHY GRID ── */
-  .why-grid { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .why-grid { border: 1px solid var(--border); border-radius: 6px; overflow: visible; }
   .why-row {
     display: grid;
     grid-template-columns: 44px 66px 1fr;
     border-bottom: 1px solid var(--border);
     align-items: stretch;
+    min-height: 38px;
   }
   .why-row:last-child { border-bottom: none; }
   .why-step {
@@ -219,7 +220,6 @@
     align-items: center;
     justify-content: center;
     border-right: 1px solid var(--border);
-    min-height: 38px;
   }
   .why-prompt {
     background: var(--surface2);
@@ -236,6 +236,7 @@
     padding: 6px 10px;
     display: flex;
     align-items: flex-start;
+    overflow: visible;
   }
   .why-cell textarea {
     border: none;
