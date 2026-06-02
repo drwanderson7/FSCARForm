@@ -618,6 +618,18 @@
       min-height: 18px;
       padding: 2px 0;
     }
+    /* Footer — keep with approval section, no orphan on its own page */
+    .form-footer {
+      page-break-before: avoid;
+      break-before: avoid;
+      margin-top: 6px !important;
+      padding-top: 6px !important;
+      font-size: 9px;
+    }
+    /* Tighten card margins on print to reclaim space */
+    .card { margin-bottom: 5px !important; }
+    .card-body { padding: 8px 10px !important; }
+    .card-header { padding: 5px 10px !important; }
     /* Tip box hidden on print to save space */
     .why-tip-box { display: none; }
   }
