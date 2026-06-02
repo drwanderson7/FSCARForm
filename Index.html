@@ -240,9 +240,7 @@
     padding: 2px 0;
     resize: none;
     overflow: hidden;
-    line-height: 1.5em;
-    min-height: 1.5em;
-    height: 1.5em;
+    line-height: 1.6em;
     display: block;
     box-sizing: border-box;
   }
@@ -1146,17 +1144,18 @@
 
   // ── Auto-resize textareas ──
   function autoResize(el) {
-    // Table-cell textareas can't use the height:0 trick due to table layout constraints.
-    // Instead: temporarily detach from flow, measure, reattach.
     const inTable = !!el.closest('table');
     if (inTable) {
-      el.style.height = '0px';
-      el.style.position = 'absolute';
-      el.style.visibility = 'hidden';
-      const h = el.scrollHeight;
-      el.style.position = '';
-      el.style.visibility = '';
-      el.style.height = Math.max(h, 24) + 'px';
+      // scrollHeight is unreliable inside table cells — use rows instead
+      el.rows = 1;
+      // Approximate chars per line based on element width (fallback 60)
+      const charsPerLine = Math.floor((el.offsetWidth || 400) / 7.8);
+      const lines = el.value.split('\n');
+      let totalRows = 0;
+      lines.forEach(line => {
+        totalRows += Math.max(1, Math.ceil((line.length || 1) / charsPerLine));
+      });
+      el.rows = Math.max(1, totalRows);
     } else {
       el.style.height = '0px';
       el.style.height = el.scrollHeight + 'px';
