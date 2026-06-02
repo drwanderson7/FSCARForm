@@ -138,6 +138,25 @@
     color: var(--white);
   }
 
+  /* On print — hide the whole pill, show a plain bold type label instead */
+  .type-print-label { display: none; }
+
+  @media print {
+    .toggle-group { display: none !important; }
+    .type-print-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #1A1A2E;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 2px solid #1A1A2E;
+      border-radius: 4px;
+      padding: 4px 10px;
+      text-align: center;
+    }
+  }
+
   /* ── CHECKBOX ROW ── */
   .check-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 4px; }
   .check-item { display: flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -518,14 +537,31 @@
     .card-header { background: #1E2A3A !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 6px 12px; font-size: 10px; }
     .card { margin-bottom: 8px; border-radius: 4px; }
     .card-body { padding: 10px 12px; }
-    /* Only keep small single-section cards together; let big ones flow */
-    .card-header + .card-body { page-break-inside: auto; }
-    .attach-zone { display: none; }
+    /* ── PAGE BREAK RULES ── */
+    /* Card headers never orphan — always keep with content below */
+    .card-header { page-break-after: avoid; break-after: avoid; }
+    /* Section 1 & meta — small enough to keep together */
+    .card:nth-child(1), .card:nth-child(2) { page-break-inside: avoid; break-inside: avoid; }
+    /* Section 3 action blocks — label must stay with its items */
+    .action-block { page-break-inside: avoid; break-inside: avoid; }
+    .action-block-label { page-break-after: avoid; break-after: avoid; }
+    /* Each individual action item stays on one page */
+    .action-item { page-break-inside: avoid; break-inside: avoid; margin-bottom: 6px; }
+    /* Section 5 approval table — keep together */
+    .approval-grid { page-break-inside: avoid; break-inside: avoid; }
+    /* Why table — keep each row together, allow table to flow across pages */
+    .why-table tr { page-break-inside: avoid; break-inside: avoid; }
+    /* Cat chips row — keep together */
+    .cat-grid { page-break-inside: avoid; break-inside: avoid; }
+    /* Don't break between section label and first action */
+    .action-block-label + .action-list { page-break-before: avoid; break-before: avoid; }
+    /* Keep short-term and long-term blocks together within their card */
+    .card-body { page-break-inside: auto; break-inside: auto; }
     .rev-history { display: none; }
     .btn { display: none; }
     .remove-btn, .remove-file, .add-action-btn { display: none; }
     .cat-chip:has(input:checked) { background: #2563EB !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .form-footer { display: block; }
+    .form-footer { display: block; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .content { margin: 8px auto; padding: 0 10px 20px; }
     .sig-input { display: none; }
     .sig-cell { border-bottom: 1px solid #ccc; }
@@ -556,12 +592,7 @@
       min-height: 18px;
     }
     .why-table .root-cause-label { display: table-cell !important; }
-    /* Action items — keep each item on one page, let the block flow */
-    .action-item { page-break-inside: avoid; break-inside: avoid; }
-    .action-block-label { page-break-after: avoid; break-after: avoid; }
-    /* Keep section header with at least the first item below it */
-    .card-header { page-break-after: avoid; break-after: avoid; }
-    /* Action textarea — same fix as why table: show content as plain text */
+    /* Action textarea — show content as plain flowing text on print */
     .action-item textarea { display: none !important; }
     .action-item::after {
       content: attr(data-print-val);
@@ -645,7 +676,7 @@
 <div class="page-header">
   <div>
     <h1>F-6000 — Corrective Action Form</h1>
-    <div class="sub">Fontaine Specialized &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Rev. 8 &nbsp;|&nbsp; 5/11/2026</div>
+    <div class="sub">Fontaine Specialized &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Rev. 9 &nbsp;|&nbsp; 6/02/2026</div>
   </div>
   <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
     <span id="save-indicator" style="font-size:11px;color:rgba(255,255,255,0.5);white-space:nowrap;"></span>
@@ -680,11 +711,12 @@
         <div class="field">
           <label>Type</label>
           <div class="toggle-group">
-            <input type="radio" name="type" id="t-internal" value="Internal" checked>
+            <input type="radio" name="type" id="t-internal" value="Internal" checked onchange="updateTypePrintLabel()">
             <label for="t-internal">Internal</label>
-            <input type="radio" name="type" id="t-vendor" value="Vendor">
+            <input type="radio" name="type" id="t-vendor" value="Vendor" onchange="updateTypePrintLabel()">
             <label for="t-vendor">Vendor</label>
           </div>
+          <div class="type-print-label" id="type-print-label">Internal</div>
         </div>
         <div class="field">
           <label>Assigned To</label>
@@ -914,7 +946,10 @@
 
   <!-- ══ FOOTER ══ -->
   <div class="form-footer">
-    F-6000 &nbsp;|&nbsp; Rev. 8 &nbsp;|&nbsp; Date Revised: 5/11/2026 &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Approver: Ops. Manager &nbsp;|&nbsp; Reviser: Drew Anderson
+    F-6000 &nbsp;|&nbsp; Rev. 9 &nbsp;|&nbsp; Date Revised: 6/02/2026 &nbsp;|&nbsp; Approver: Ops. Manager &nbsp;|&nbsp; Reviser: Drew Anderson
+    <div style="margin-top:6px;font-size:11px;font-weight:700;color:#DC2626;letter-spacing:0.03em;">
+      ⚠ This is a controlled document. If this text is in red, this is a controlled document.
+    </div>
   </div>
 
   <!-- ══ REVISION HISTORY ══ -->
@@ -932,9 +967,16 @@
       </thead>
       <tbody>
         <tr class="rev-current">
+          <td>9</td>
+          <td>06/02/2026</td>
+          <td>Converted from Word document to interactive HTML tool; updated appearance and added digital workflow features</td>
+          <td>Drew Anderson</td>
+          <td>Ops. Manager</td>
+        </tr>
+        <tr>
           <td>8</td>
           <td>05/11/2026</td>
-          <td>Current release — converted to interactive HTML tool</td>
+          <td>Previous Word document release</td>
           <td>Drew Anderson</td>
           <td>Ops. Manager</td>
         </tr>
@@ -1093,6 +1135,13 @@
       setSaveIndicator(`Draft restored — last saved ${t}`, 'rgba(100,220,140,0.85)');
     }
     setTimeout(autoResizeAll, 50);
+    updateTypePrintLabel();
+  }
+
+  // ── Type print label ──
+  function updateTypePrintLabel() {
+    const el = document.querySelector('input[name="type"]:checked');
+    document.getElementById('type-print-label').textContent = el ? el.value.toUpperCase() : 'INTERNAL';
   }
 
   // ── Auto-resize textareas ──
@@ -1291,9 +1340,8 @@
     setSaveIndicator('Draft cleared', 'rgba(255,255,255,0.4)');
     addAction('st');
     addAction('lt');
-  }
-
-  // ── Wire up all inputs to autosave + autoResize ──
+    updateTypePrintLabel();
+  } to autosave + autoResize ──
   document.addEventListener('input', e => {
     scheduleSave();
     if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
@@ -1317,6 +1365,7 @@
   }
   // Run after fonts/layout settle
   setTimeout(autoResizeAll, 100);
+  updateTypePrintLabel();
 </script>
 </body>
 </html>
