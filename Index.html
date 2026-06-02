@@ -238,22 +238,24 @@
     align-items: flex-start;
     overflow: visible;
   }
-  .why-cell textarea {
-    border: none;
-    outline: none;
+  .why-editable {
     width: 100%;
+    min-height: 24px;
     font-size: 13px;
     font-family: inherit;
     color: var(--text);
-    background: transparent;
-    padding: 2px 0;
-    resize: none;
-    overflow: hidden;
     line-height: 1.5;
-    display: block;
-    box-sizing: border-box;
+    outline: none;
+    word-break: break-word;
+    white-space: pre-wrap;
+    cursor: text;
   }
-  .why-cell textarea:focus { border-bottom: 2px solid var(--blue); }
+  .why-editable:empty::before {
+    content: attr(data-placeholder);
+    color: #aaa;
+    pointer-events: none;
+  }
+  .why-editable:focus { border-bottom: 2px solid var(--blue); }
   .why-root-row { background: rgba(37,99,235,0.05); }
   .why-root-label {
     background: var(--blue);
@@ -574,21 +576,22 @@
     ::placeholder { color: transparent !important; }
     /* Tighten section 1 */
     #f-problem { min-height: 40px !important; }
-    /* Why grid print */
-    .why-cell textarea { display: none !important; }
-    .why-cell::before {
-      content: attr(data-print-val);
-      display: block;
-      font-size: 11px;
-      font-family: 'Segoe UI', Calibri, sans-serif;
-      color: #1A1A2E;
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.5;
-      padding: 2px 0;
-      min-height: 18px;
-      width: 100%;
+    /* ── INPUT PRINT FIX: hide inputs, show values as text ── */
+    /* All regular text inputs — hide and show value via wrapper */
+    .field input[type="text"],
+    .field input[type="date"],
+    .field textarea,
+    .approval-grid input[type="text"],
+    .approval-grid input[type="date"] {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color: #1A1A2E !important;
+      background: white !important;
+      border-color: #ccc !important;
     }
+    /* Why grid print — editable divs print naturally, just hide placeholder */
+    .why-editable:empty::before { content: none !important; }
+    .why-cell textarea { display: none !important; }
     .why-row { page-break-inside: avoid; break-inside: avoid; }
     /* Action textarea — show content as plain flowing text on print */
     .action-item textarea { display: none !important; }
@@ -602,6 +605,18 @@
       word-break: break-word;
       line-height: 1.5;
       flex: 1;
+    }
+    /* Problem field — show as plain div on print */
+    #f-problem { display: none !important; }
+    #f-problem-print {
+      display: block !important;
+      font-size: 11px;
+      color: #1A1A2E;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      min-height: 18px;
+      padding: 2px 0;
     }
     /* Tip box hidden on print to save space */
     .why-tip-box { display: none; }
@@ -730,7 +745,8 @@
     <div class="card-body">
       <div class="field" style="margin-bottom:14px;">
         <label>Define the Problem <span style="font-weight:400;color:var(--muted);text-transform:none;">(be specific — who, what, where, when)</span></label>
-        <textarea id="f-problem" placeholder="Describe the problem in detail…" oninput="autoResize(this)"></textarea>
+        <textarea id="f-problem" placeholder="Describe the problem in detail…" oninput="autoResize(this);document.getElementById('f-problem-print').textContent=this.value"></textarea>
+        <div id="f-problem-print" style="display:none;"></div>
       </div>
 
       <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;">
@@ -790,45 +806,45 @@
       </div>
 
       <div class="why-grid">
-        <div class="why-row" id="why-row-1">
+        <div class="why-row">
           <div class="why-step">1</div>
           <div class="why-prompt">WHY?</div>
-          <div class="why-cell" data-print-val="">
-            <textarea id="why1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to first why…"></textarea>
+          <div class="why-cell" data-print-val="" id="why1-cell">
+            <div class="why-editable" id="why1" contenteditable="true" data-placeholder="Answer to first why…" oninput="syncWhyVal('why1')"></div>
           </div>
         </div>
-        <div class="why-row" id="why-row-2">
+        <div class="why-row">
           <div class="why-step">2</div>
           <div class="why-prompt">WHY?</div>
-          <div class="why-cell" data-print-val="">
-            <textarea id="why2" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to second why…"></textarea>
+          <div class="why-cell" data-print-val="" id="why2-cell">
+            <div class="why-editable" id="why2" contenteditable="true" data-placeholder="Answer to second why…" oninput="syncWhyVal('why2')"></div>
           </div>
         </div>
-        <div class="why-row" id="why-row-3">
+        <div class="why-row">
           <div class="why-step">3</div>
           <div class="why-prompt">WHY?</div>
-          <div class="why-cell" data-print-val="">
-            <textarea id="why3" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to third why…"></textarea>
+          <div class="why-cell" data-print-val="" id="why3-cell">
+            <div class="why-editable" id="why3" contenteditable="true" data-placeholder="Answer to third why…" oninput="syncWhyVal('why3')"></div>
           </div>
         </div>
-        <div class="why-row" id="why-row-4">
+        <div class="why-row">
           <div class="why-step">4</div>
           <div class="why-prompt">WHY?</div>
-          <div class="why-cell" data-print-val="">
-            <textarea id="why4" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to fourth why…"></textarea>
+          <div class="why-cell" data-print-val="" id="why4-cell">
+            <div class="why-editable" id="why4" contenteditable="true" data-placeholder="Answer to fourth why…" oninput="syncWhyVal('why4')"></div>
           </div>
         </div>
-        <div class="why-row" id="why-row-5">
+        <div class="why-row">
           <div class="why-step">5</div>
           <div class="why-prompt">WHY?</div>
-          <div class="why-cell" data-print-val="">
-            <textarea id="why5" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to fifth why…"></textarea>
+          <div class="why-cell" data-print-val="" id="why5-cell">
+            <div class="why-editable" id="why5" contenteditable="true" data-placeholder="Answer to fifth why…" oninput="syncWhyVal('why5')"></div>
           </div>
         </div>
         <div class="why-row why-root-row">
           <div class="why-root-label" style="grid-column:1/3;">Root Cause Statement</div>
-          <div class="why-cell" data-print-val="">
-            <textarea id="root-cause-stmt" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Summarize the confirmed root cause…"></textarea>
+          <div class="why-cell" data-print-val="" id="root-cause-stmt-cell">
+            <div class="why-editable" id="root-cause-stmt" contenteditable="true" data-placeholder="Summarize the confirmed root cause…" oninput="syncWhyVal('root-cause-stmt')"></div>
           </div>
         </div>
       </div>
@@ -1031,12 +1047,12 @@
       },
       section2: {
         rootCauseCategory: getRadio('rcc'),
-        why1: document.getElementById('why1').value,
-        why2: document.getElementById('why2').value,
-        why3: document.getElementById('why3').value,
-        why4: document.getElementById('why4').value,
-        why5: document.getElementById('why5').value,
-        rootCauseStatement: document.getElementById('root-cause-stmt').value,
+        why1: getWhyVal('why1'),
+        why2: getWhyVal('why2'),
+        why3: getWhyVal('why3'),
+        why4: getWhyVal('why4'),
+        why5: getWhyVal('why5'),
+        rootCauseStatement: getWhyVal('root-cause-stmt'),
       },
       section3: { shortTermActions: stItems, longTermActions: ltItems },
       section5: {
@@ -1113,9 +1129,9 @@
       if (r) r.checked = true;
     }
     ['why1','why2','why3','why4','why5'].forEach(id => {
-      if (s2[id]) document.getElementById(id).value = s2[id];
+      if (s2[id]) setWhyVal(id, s2[id]);
     });
-    if (s2.rootCauseStatement) document.getElementById('root-cause-stmt').value = s2.rootCauseStatement;
+    if (s2.rootCauseStatement) setWhyVal('root-cause-stmt', s2.rootCauseStatement);
 
     // Section 3 — rebuild action rows
     const s3 = d.section3 || {};
@@ -1146,6 +1162,25 @@
     updateTypePrintLabel();
   }
 
+  // ── Why field sync (contenteditable → data store) ──
+  const WHY_IDS = ['why1','why2','why3','why4','why5','root-cause-stmt'];
+  function syncWhyVal(id) {
+    const el = document.getElementById(id);
+    const cell = document.getElementById(id + '-cell');
+    if (cell) cell.setAttribute('data-print-val', el.innerText);
+    scheduleSave();
+  }
+  function getWhyVal(id) {
+    return (document.getElementById(id) || {}).innerText || '';
+  }
+  function setWhyVal(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerText = val || '';
+    const cell = document.getElementById(id + '-cell');
+    if (cell) cell.setAttribute('data-print-val', val || '');
+  }
+
   // ── Type print label ──
   function updateTypePrintLabel() {
     const el = document.querySelector('input[name="type"]:checked');
@@ -1162,6 +1197,9 @@
       autoResize(el);
       if (el.parentElement) el.parentElement.setAttribute('data-print-val', el.value);
     });
+    // Sync problem print div
+    const fp = document.getElementById('f-problem');
+    if (fp) document.getElementById('f-problem-print').textContent = fp.value;
   }
 
   // Set initial height on why textareas via JS (not CSS) so autoResize can override freely
@@ -1292,6 +1330,7 @@
         const data = JSON.parse(e.target.result);
         // Wipe current state silently before restoring
         document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => el.value = '');
+        WHY_IDS.forEach(id => setWhyVal(id, ''));
         document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
         document.getElementById('t-internal').checked = true;
         document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
@@ -1346,12 +1385,15 @@
       document.getElementById(`sig-${dept}`).textContent = '';
     });
     document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    WHY_IDS.forEach(id => setWhyVal(id, ''));
     localStorage.removeItem(SAVE_KEY);
     setSaveIndicator('Draft cleared', 'rgba(255,255,255,0.4)');
     addAction('st');
     addAction('lt');
     updateTypePrintLabel();
-  } to autosave + autoResize ──
+  }
+
+  // ── Wire up all inputs to autosave + autoResize ──
   document.addEventListener('input', e => {
     scheduleSave();
     if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
