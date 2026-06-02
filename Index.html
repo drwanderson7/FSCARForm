@@ -240,13 +240,13 @@
     padding: 2px 0;
     resize: none;
     overflow: hidden;
-    line-height: 1.5;
-    height: auto;
-    min-height: 28px;
+    line-height: 1.5em;
+    min-height: 1.5em;
+    height: 1.5em;
     display: block;
     box-sizing: border-box;
   }
-  .why-table td:last-child { overflow: visible; }
+  .why-table td:last-child { overflow: visible; vertical-align: top; padding-top: 8px; }
   .why-table textarea:focus { border-bottom: 2px solid var(--blue); }
   .why-table .root-cause-row td {
     background: rgba(37,99,235,0.06);
@@ -1146,8 +1146,21 @@
 
   // ── Auto-resize textareas ──
   function autoResize(el) {
-    el.style.height = '0px';
-    el.style.height = el.scrollHeight + 'px';
+    // Table-cell textareas can't use the height:0 trick due to table layout constraints.
+    // Instead: temporarily detach from flow, measure, reattach.
+    const inTable = !!el.closest('table');
+    if (inTable) {
+      el.style.height = '0px';
+      el.style.position = 'absolute';
+      el.style.visibility = 'hidden';
+      const h = el.scrollHeight;
+      el.style.position = '';
+      el.style.visibility = '';
+      el.style.height = Math.max(h, 24) + 'px';
+    } else {
+      el.style.height = '0px';
+      el.style.height = el.scrollHeight + 'px';
+    }
   }
   function autoResizeAll() {
     document.querySelectorAll('textarea').forEach(el => {
