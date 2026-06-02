@@ -201,35 +201,43 @@
     color: var(--white);
   }
 
-  /* ── 5-WHY TABLE ── */
-  .why-table { width: 100%; border-collapse: collapse; }
-  .why-table th, .why-table td { border: 1px solid var(--border); padding: 6px 10px; vertical-align: middle; }
-  .why-table th {
-    background: var(--surface2);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    width: 1%;
+  /* ── 5-WHY GRID ── */
+  .why-grid { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .why-row {
+    display: grid;
+    grid-template-columns: 44px 66px 1fr;
+    border-bottom: 1px solid var(--border);
+    align-items: stretch;
   }
-  .why-table .step-num {
+  .why-row:last-child { border-bottom: none; }
+  .why-step {
     background: var(--nav);
     color: var(--white);
     font-weight: 700;
-    text-align: center;
-    width: 40px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+    min-height: 38px;
   }
-  .why-table .prompt-cell {
+  .why-prompt {
     background: var(--surface2);
-    font-weight: 700;
     color: var(--blue);
+    font-weight: 700;
     font-style: italic;
-    width: 60px;
-    text-align: center;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
   }
-  .why-table textarea {
+  .why-cell {
+    padding: 6px 10px;
+    display: flex;
+    align-items: flex-start;
+  }
+  .why-cell textarea {
     border: none;
     outline: none;
     width: 100%;
@@ -240,26 +248,26 @@
     padding: 2px 0;
     resize: none;
     overflow: hidden;
-    line-height: 1.6em;
+    line-height: 1.5;
+    min-height: 24px;
+    height: 24px;
     display: block;
     box-sizing: border-box;
   }
-  .why-table td:last-child { overflow: visible; vertical-align: top; padding-top: 8px; }
-  .why-table textarea:focus { border-bottom: 2px solid var(--blue); }
-  .why-table .root-cause-row td {
-    background: rgba(37,99,235,0.06);
-    font-weight: 600;
-  }
-  .why-table .root-cause-label {
-    background: var(--blue) !important;
+  .why-cell textarea:focus { border-bottom: 2px solid var(--blue); }
+  .why-root-row { background: rgba(37,99,235,0.05); }
+  .why-root-label {
+    background: var(--blue);
     color: var(--white);
     font-weight: 700;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    white-space: nowrap;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 8px 12px;
+    border-right: 1px solid rgba(255,255,255,0.2);
   }
 
   /* ── ACTION ITEMS ── */
@@ -547,8 +555,8 @@
     .action-item { page-break-inside: avoid; break-inside: avoid; margin-bottom: 6px; }
     /* Section 5 approval table — keep together */
     .approval-grid { page-break-inside: avoid; break-inside: avoid; }
-    /* Why table — keep each row together, allow table to flow across pages */
-    .why-table tr { page-break-inside: avoid; break-inside: avoid; }
+    /* Why grid — keep each row together */
+    .why-row { page-break-inside: avoid; break-inside: avoid; }
     /* Cat chips row — keep together */
     .cat-grid { page-break-inside: avoid; break-inside: avoid; }
     /* Don't break between section label and first action */
@@ -567,17 +575,9 @@
     ::placeholder { color: transparent !important; }
     /* Tighten section 1 */
     #f-problem { min-height: 40px !important; }
-    /* Why table rows should not break mid-row */
-    .why-table tr { page-break-inside: avoid; }
-    .why-table textarea { overflow: visible !important; height: auto !important; }
-    /* Meta grid tighter */
-    .meta-grid { gap: 8px; }
-    .field input, .field textarea, .field select { padding: 4px 6px; font-size: 11px; }
-    /* Why table — replace textarea rendering with full-height divs on print */
-    .why-table textarea {
-      display: none !important;
-    }
-    .why-table td:last-child::before {
+    /* Why grid print */
+    .why-cell textarea { display: none !important; }
+    .why-cell::before {
       content: attr(data-print-val);
       display: block;
       font-size: 11px;
@@ -588,8 +588,9 @@
       line-height: 1.5;
       padding: 2px 0;
       min-height: 18px;
+      width: 100%;
     }
-    .why-table .root-cause-label { display: table-cell !important; }
+    .why-row { page-break-inside: avoid; break-inside: avoid; }
     /* Action textarea — show content as plain flowing text on print */
     .action-item textarea { display: none !important; }
     .action-item::after {
@@ -789,39 +790,49 @@
         <strong style="color:var(--blue);">How to complete the 5-Why:</strong> Using the problem from Section 1, ask <em>"Why did this happen?"</em> and record the answer in Step 1. Use that answer as the input for Step 2, and continue until you reach a process- or system-level cause (usually by Step 4 or 5). <em>Tip: if fixing that answer would solve the problem, you have not gone deep enough — keep asking why.</em>
       </div>
 
-      <table class="why-table">
-        <tbody>
-          <tr>
-            <td class="step-num">1</td>
-            <td class="prompt-cell">WHY?</td>
-            <td data-print-val=""><textarea id="why1" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to first why…"></textarea></td>
-          </tr>
-          <tr>
-            <td class="step-num">2</td>
-            <td class="prompt-cell">WHY?</td>
-            <td data-print-val=""><textarea id="why2" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to second why…"></textarea></td>
-          </tr>
-          <tr>
-            <td class="step-num">3</td>
-            <td class="prompt-cell">WHY?</td>
-            <td data-print-val=""><textarea id="why3" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to third why…"></textarea></td>
-          </tr>
-          <tr>
-            <td class="step-num">4</td>
-            <td class="prompt-cell">WHY?</td>
-            <td data-print-val=""><textarea id="why4" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to fourth why…"></textarea></td>
-          </tr>
-          <tr>
-            <td class="step-num">5</td>
-            <td class="prompt-cell">WHY?</td>
-            <td data-print-val=""><textarea id="why5" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to fifth why…"></textarea></td>
-          </tr>
-          <tr class="root-cause-row">
-            <td class="root-cause-label" colspan="2">Root Cause Statement</td>
-            <td data-print-val=""><textarea id="root-cause-stmt" rows="1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Summarize the confirmed root cause…"></textarea></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="why-grid">
+        <div class="why-row" id="why-row-1">
+          <div class="why-step">1</div>
+          <div class="why-prompt">WHY?</div>
+          <div class="why-cell" data-print-val="">
+            <textarea id="why1" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to first why…"></textarea>
+          </div>
+        </div>
+        <div class="why-row" id="why-row-2">
+          <div class="why-step">2</div>
+          <div class="why-prompt">WHY?</div>
+          <div class="why-cell" data-print-val="">
+            <textarea id="why2" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to second why…"></textarea>
+          </div>
+        </div>
+        <div class="why-row" id="why-row-3">
+          <div class="why-step">3</div>
+          <div class="why-prompt">WHY?</div>
+          <div class="why-cell" data-print-val="">
+            <textarea id="why3" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to third why…"></textarea>
+          </div>
+        </div>
+        <div class="why-row" id="why-row-4">
+          <div class="why-step">4</div>
+          <div class="why-prompt">WHY?</div>
+          <div class="why-cell" data-print-val="">
+            <textarea id="why4" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to fourth why…"></textarea>
+          </div>
+        </div>
+        <div class="why-row" id="why-row-5">
+          <div class="why-step">5</div>
+          <div class="why-prompt">WHY?</div>
+          <div class="why-cell" data-print-val="">
+            <textarea id="why5" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Answer to fifth why…"></textarea>
+          </div>
+        </div>
+        <div class="why-row why-root-row">
+          <div class="why-root-label" style="grid-column:1/3;">Root Cause Statement</div>
+          <div class="why-cell" data-print-val="">
+            <textarea id="root-cause-stmt" oninput="autoResize(this);this.parentElement.setAttribute('data-print-val',this.value)" placeholder="Summarize the confirmed root cause…"></textarea>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1144,22 +1155,8 @@
 
   // ── Auto-resize textareas ──
   function autoResize(el) {
-    const inTable = !!el.closest('table');
-    if (inTable) {
-      // scrollHeight is unreliable inside table cells — use rows instead
-      el.rows = 1;
-      // Approximate chars per line based on element width (fallback 60)
-      const charsPerLine = Math.floor((el.offsetWidth || 400) / 7.8);
-      const lines = el.value.split('\n');
-      let totalRows = 0;
-      lines.forEach(line => {
-        totalRows += Math.max(1, Math.ceil((line.length || 1) / charsPerLine));
-      });
-      el.rows = Math.max(1, totalRows);
-    } else {
-      el.style.height = '0px';
-      el.style.height = el.scrollHeight + 'px';
-    }
+    el.style.height = '0px';
+    el.style.height = el.scrollHeight + 'px';
   }
   function autoResizeAll() {
     document.querySelectorAll('textarea').forEach(el => {
