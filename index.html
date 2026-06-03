@@ -710,7 +710,7 @@
 <div class="page-header">
   <div>
     <h1>F-6000 — Corrective Action Form</h1>
-    <div class="sub">Fontaine Specialized &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Rev. 9 &nbsp;|&nbsp; 6/02/2026</div>
+    <div class="sub">Fontaine Specialized &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Rev. 10 &nbsp;|&nbsp; 6/03/2026</div>
   </div>
   <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
     <span id="save-indicator" style="font-size:11px;color:rgba(255,255,255,0.5);white-space:nowrap;"></span>
@@ -729,6 +729,10 @@
   <!-- ══ TOP META ══ -->
   <div class="card">
     <div class="card-body">
+      <div class="field" style="margin-bottom:12px;">
+        <label>Subject / Topic</label>
+        <input type="text" id="f-subject" placeholder="Brief description of the issue or topic of this CAR…">
+      </div>
       <div class="meta-grid">
         <div class="field">
           <label>CAR #</label>
@@ -991,7 +995,7 @@
 
   <!-- ══ FOOTER ══ -->
   <div class="form-footer">
-    F-6000 &nbsp;|&nbsp; Rev. 9 &nbsp;|&nbsp; Date Revised: 6/02/2026 &nbsp;|&nbsp; Approver: Ops. Manager &nbsp;|&nbsp; Reviser: Drew Anderson
+    F-6000 &nbsp;|&nbsp; Rev. 10 &nbsp;|&nbsp; Date Revised: 6/03/2026 &nbsp;|&nbsp; Approver: Ops. Manager &nbsp;|&nbsp; Reviser: Drew Anderson
     <div style="margin-top:6px;font-size:11px;font-weight:700;color:#DC2626;letter-spacing:0.03em;">
       ⚠ This is a controlled document. If this text is in red, this is a controlled document.
     </div>
@@ -1012,6 +1016,13 @@
       </thead>
       <tbody>
         <tr class="rev-current">
+          <td>10</td>
+          <td>06/03/2026</td>
+          <td>Added Subject / Topic field to header meta section</td>
+          <td>Drew Anderson</td>
+          <td>Ops. Manager</td>
+        </tr>
+        <tr>
           <td>9</td>
           <td>06/02/2026</td>
           <td>Converted from Word document to interactive HTML tool; updated appearance and added digital workflow features</td>
@@ -1052,6 +1063,7 @@
     document.querySelectorAll('#lt-list .action-item textarea').forEach(ta => ltItems.push(ta.value));
     return {
       header: {
+        subject:     document.getElementById('f-subject').value,
         carNumber:   document.getElementById('f-car').value,
         date:        document.getElementById('f-date').value,
         requestedBy: document.getElementById('f-requestedby').value,
@@ -1122,6 +1134,7 @@
 
     // Header
     const h = d.header || {};
+    if (h.subject)     document.getElementById('f-subject').value = h.subject;
     if (h.carNumber)   document.getElementById('f-car').value = h.carNumber;
     if (h.date)        document.getElementById('f-date').value = h.date;
     if (h.requestedBy) document.getElementById('f-requestedby').value = h.requestedBy;
