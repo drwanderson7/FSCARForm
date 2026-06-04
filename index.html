@@ -710,7 +710,7 @@
 <div class="page-header">
   <div>
     <h1>F-6000 — Corrective Action Form</h1>
-    <div class="sub">Fontaine Specialized &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Rev. 10 &nbsp;|&nbsp; 6/03/2026</div>
+    <div class="sub">Fontaine Specialized &nbsp;|&nbsp; Controlled Document &nbsp;|&nbsp; Rev. 11 &nbsp;|&nbsp; 6/03/2026</div>
   </div>
   <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
     <span id="save-indicator" style="font-size:11px;color:rgba(255,255,255,0.5);white-space:nowrap;"></span>
@@ -929,21 +929,31 @@
         <thead>
           <tr>
             <th style="text-align:left;">Disposition</th>
-            <th>Operation</th>
+            <th>Ops / Manufacturing</th>
             <th>Engineering</th>
-            <th>Manufacturing</th>
             <th>QA</th>
             <th>Purchasing *</th>
+            <th>Other</th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td class="row-label" style="vertical-align:top;padding-top:10px;">Role</td>
+            <td style="vertical-align:top;padding:6px 4px;"></td>
+            <td style="vertical-align:top;padding:6px 4px;"></td>
+            <td style="vertical-align:top;padding:6px 4px;"></td>
+            <td style="vertical-align:top;padding:6px 4px;"></td>
+            <td style="vertical-align:top;padding:6px 4px;">
+              <input type="text" id="n-other-role" placeholder="e.g. Sales" style="border:none;border-bottom:1px solid var(--border);background:transparent;font-family:inherit;font-size:12px;width:100%;padding:2px 0;text-align:center;color:var(--text);outline:none;" oninput="scheduleSave()">
+            </td>
+          </tr>
+          <tr>
             <td class="row-label">Decision</td>
             <td><div class="disposition-cell"><button class="disp-btn" id="d-ops-a" onclick="setDisp('ops','approved')">✓ Approved</button><button class="disp-btn" id="d-ops-r" onclick="setDisp('ops','rejected')">✗ Rejected</button><button class="disp-btn" id="d-ops-n" onclick="setDisp('ops','na')">— N/A</button></div></td>
             <td><div class="disposition-cell"><button class="disp-btn" id="d-eng-a" onclick="setDisp('eng','approved')">✓ Approved</button><button class="disp-btn" id="d-eng-r" onclick="setDisp('eng','rejected')">✗ Rejected</button><button class="disp-btn" id="d-eng-n" onclick="setDisp('eng','na')">— N/A</button></div></td>
-            <td><div class="disposition-cell"><button class="disp-btn" id="d-mfg-a" onclick="setDisp('mfg','approved')">✓ Approved</button><button class="disp-btn" id="d-mfg-r" onclick="setDisp('mfg','rejected')">✗ Rejected</button><button class="disp-btn" id="d-mfg-n" onclick="setDisp('mfg','na')">— N/A</button></div></td>
             <td><div class="disposition-cell"><button class="disp-btn" id="d-qa-a" onclick="setDisp('qa','approved')">✓ Approved</button><button class="disp-btn" id="d-qa-r" onclick="setDisp('qa','rejected')">✗ Rejected</button><button class="disp-btn" id="d-qa-n" onclick="setDisp('qa','na')">— N/A</button></div></td>
             <td><div class="disposition-cell"><button class="disp-btn" id="d-pur-a" onclick="setDisp('pur','approved')">✓ Approved</button><button class="disp-btn" id="d-pur-r" onclick="setDisp('pur','rejected')">✗ Rejected</button><button class="disp-btn" id="d-pur-n" onclick="setDisp('pur','na')">— N/A</button></div></td>
+            <td><div class="disposition-cell"><button class="disp-btn" id="d-oth-a" onclick="setDisp('oth','approved')">✓ Approved</button><button class="disp-btn" id="d-oth-r" onclick="setDisp('oth','rejected')">✗ Rejected</button><button class="disp-btn" id="d-oth-n" onclick="setDisp('oth','na')">— N/A</button></div></td>
           </tr>
           <tr>
             <td class="row-label">Signature</td>
@@ -957,11 +967,6 @@
               <div class="sig-display empty" id="sig-eng"></div>
               <input class="sig-input" type="text" id="n-eng" placeholder="Type name to sign" oninput="updateSig('eng',this.value)">
             </td>
-            <td class="sig-cell" id="sc-mfg">
-              <div class="na-stamp" id="na-mfg">N / A</div>
-              <div class="sig-display empty" id="sig-mfg"></div>
-              <input class="sig-input" type="text" id="n-mfg" placeholder="Type name to sign" oninput="updateSig('mfg',this.value)">
-            </td>
             <td class="sig-cell" id="sc-qa">
               <div class="na-stamp" id="na-qa">N / A</div>
               <div class="sig-display empty" id="sig-qa"></div>
@@ -972,14 +977,19 @@
               <div class="sig-display empty" id="sig-pur"></div>
               <input class="sig-input" type="text" id="n-pur" placeholder="Type name to sign" oninput="updateSig('pur',this.value)">
             </td>
+            <td class="sig-cell" id="sc-oth">
+              <div class="na-stamp" id="na-oth">N / A</div>
+              <div class="sig-display empty" id="sig-oth"></div>
+              <input class="sig-input" type="text" id="n-oth" placeholder="Type name to sign" oninput="updateSig('oth',this.value)">
+            </td>
           </tr>
           <tr>
             <td class="row-label">Date</td>
             <td class="date-cell" id="dc-ops"><input type="date" id="dt-ops"></td>
             <td class="date-cell" id="dc-eng"><input type="date" id="dt-eng"></td>
-            <td class="date-cell" id="dc-mfg"><input type="date" id="dt-mfg"></td>
             <td class="date-cell" id="dc-qa"><input type="date" id="dt-qa"></td>
             <td class="date-cell" id="dc-pur"><input type="date" id="dt-pur"></td>
+            <td class="date-cell" id="dc-oth"><input type="date" id="dt-oth"></td>
           </tr>
           <tr class="notes-row">
             <td class="row-label" style="vertical-align:top;padding-top:12px;">Notes</td>
@@ -995,7 +1005,7 @@
 
   <!-- ══ FOOTER ══ -->
   <div class="form-footer">
-    F-6000 &nbsp;|&nbsp; Rev. 10 &nbsp;|&nbsp; Date Revised: 6/03/2026 &nbsp;|&nbsp; Approver: Ops. Manager &nbsp;|&nbsp; Reviser: Drew Anderson
+    F-6000 &nbsp;|&nbsp; Rev. 11 &nbsp;|&nbsp; Date Revised: 6/03/2026 &nbsp;|&nbsp; Approver: Ops. Manager &nbsp;|&nbsp; Reviser: Drew Anderson
     <div style="margin-top:6px;font-size:11px;font-weight:700;color:#DC2626;letter-spacing:0.03em;">
       ⚠ This is a controlled document. If this text is in red, this is a controlled document.
     </div>
@@ -1016,6 +1026,13 @@
       </thead>
       <tbody>
         <tr class="rev-current">
+          <td>11</td>
+          <td>06/03/2026</td>
+          <td>Restructured Section 5 approval grid — combined Operations and Manufacturing into one column, added flexible Other column with role description field</td>
+          <td>Drew Anderson</td>
+          <td>Ops. Manager</td>
+        </tr>
+        <tr>
           <td>10</td>
           <td>06/03/2026</td>
           <td>Added Subject / Topic field to header meta section</td>
@@ -1090,19 +1107,20 @@
       section3: { shortTermActions: stItems, longTermActions: ltItems },
       section5: {
         dispositions: { ...dispState },
+        otherRole: document.getElementById('n-other-role').value,
         names: {
           ops: document.getElementById('n-ops').value,
           eng: document.getElementById('n-eng').value,
-          mfg: document.getElementById('n-mfg').value,
           qa:  document.getElementById('n-qa').value,
           pur: document.getElementById('n-pur').value,
+          oth: document.getElementById('n-oth').value,
         },
         dates: {
           ops: document.getElementById('dt-ops').value,
           eng: document.getElementById('dt-eng').value,
-          mfg: document.getElementById('dt-mfg').value,
           qa:  document.getElementById('dt-qa').value,
           pur: document.getElementById('dt-pur').value,
+          oth: document.getElementById('dt-oth').value,
         },
         notes: document.getElementById('approval-notes').value,
       },
@@ -1174,10 +1192,11 @@
 
     // Section 5
     const s5 = d.section5 || {};
-    const depts = ['ops','eng','mfg','qa','pur'];
+    const depts = ['ops','eng','qa','pur','oth'];
     if (s5.dispositions) {
       depts.forEach(dept => { if (s5.dispositions[dept]) setDisp(dept, s5.dispositions[dept]); });
     }
+    if (s5.otherRole) document.getElementById('n-other-role').value = s5.otherRole;
     if (s5.names) depts.forEach(dept => {
       const v = s5.names[dept];
       if (v) { document.getElementById(`n-${dept}`).value = v; updateSig(dept, v); }
@@ -1373,7 +1392,7 @@
         document.getElementById('lt-list').innerHTML = '';
         updateCount('st'); updateCount('lt');
         Object.keys(dispState).forEach(k => delete dispState[k]);
-        ['ops','eng','mfg','qa','pur'].forEach(dept => {
+        ['ops','eng','qa','pur','oth'].forEach(dept => {
           document.getElementById(`d-${dept}-a`).className = 'disp-btn';
           document.getElementById(`d-${dept}-r`).className = 'disp-btn';
           document.getElementById(`d-${dept}-n`).className = 'disp-btn';
@@ -1410,7 +1429,7 @@
     document.getElementById('attach-list').innerHTML = '';
     attachedFiles.length = 0;
     Object.keys(dispState).forEach(k => delete dispState[k]);
-    ['ops','eng','mfg','qa','pur'].forEach(dept => {
+    ['ops','eng','qa','pur','oth'].forEach(dept => {
       document.getElementById(`d-${dept}-a`).className = 'disp-btn';
       document.getElementById(`d-${dept}-r`).className = 'disp-btn';
       document.getElementById(`d-${dept}-n`).className = 'disp-btn';
@@ -1418,6 +1437,7 @@
       document.getElementById(`dc-${dept}`).classList.remove('na-state');
       document.getElementById(`sig-${dept}`).textContent = '';
     });
+    document.getElementById('n-other-role').value = '';
     document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
     WHY_IDS.forEach(id => setWhyVal(id, ''));
     localStorage.removeItem(SAVE_KEY);
