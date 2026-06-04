@@ -1003,6 +1003,53 @@
     </div>
   </div>
 
+  <!-- ══ SECTION 6 — VERIFICATION OF EFFECTIVENESS ══ -->
+  <div class="card">
+    <div class="card-header">Section 6 — Verification of Effectiveness</div>
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+        To be completed after corrective actions have been implemented. Verify that the actions taken have resolved the root cause and the problem has not recurred.
+      </p>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label>Verification Notes <span style="font-weight:400;color:var(--muted);text-transform:none;">(describe how effectiveness was verified)</span></label>
+        <textarea id="voe-notes" placeholder="e.g. Reviewed updated procedure, confirmed no recurrence over 30-day monitoring period…" oninput="autoResize(this)"></textarea>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end;margin-bottom:16px;">
+        <div class="field">
+          <label>Verified By — Role / Title</label>
+          <input type="text" id="voe-role" placeholder="e.g. Quality Manager">
+        </div>
+        <div class="field">
+          <label>Date Verified</label>
+          <input type="date" id="voe-date">
+        </div>
+        <div class="field">
+          <label>Effectiveness Result</label>
+          <div style="display:flex;gap:6px;margin-top:2px;">
+            <button class="disp-btn" id="voe-eff-y" onclick="setVOE('effective')" style="flex:1;">✓ Effective</button>
+            <button class="disp-btn" id="voe-eff-n" onclick="setVOE('ineffective')" style="flex:1;">✗ Not Effective</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signature -->
+      <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+        <div style="background:var(--surface2);padding:6px 12px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Signature</div>
+        <div class="sig-cell" id="sc-voe" style="min-height:56px;">
+          <div class="na-stamp" id="na-voe" style="display:none;"></div>
+          <div class="sig-display empty" id="sig-voe"></div>
+          <input class="sig-input" type="text" id="n-voe" placeholder="Type name to sign" oninput="updateSig('voe',this.value)">
+        </div>
+      </div>
+
+      <div id="voe-ineffective-note" style="display:none;margin-top:12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 14px;font-size:12px;color:#991B1B;">
+        ⚠ If not effective, a new CAR should be initiated referencing this CAR number.
+      </div>
+    </div>
+  </div>
+
   <!-- ══ FOOTER ══ -->
   <div class="form-footer">
     F-6000 &nbsp;|&nbsp; Rev. 11 &nbsp;|&nbsp; Date Revised: 6/03/2026 &nbsp;|&nbsp; Approver: Ops. Manager &nbsp;|&nbsp; Reviser: Drew Anderson
@@ -1124,6 +1171,13 @@
         },
         notes: document.getElementById('approval-notes').value,
       },
+      section6: {
+        notes:       document.getElementById('voe-notes').value,
+        role:        document.getElementById('voe-role').value,
+        date:        document.getElementById('voe-date').value,
+        result:      voeState,
+        signature:   document.getElementById('n-voe').value,
+      },
       savedAt: new Date().toISOString(),
     };
   }
@@ -1211,6 +1265,14 @@
       const t = new Date(d.savedAt).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
       setSaveIndicator(`Draft restored — last saved ${t}`, 'rgba(100,220,140,0.85)');
     }
+    // Section 6
+    const s6 = d.section6 || {};
+    if (s6.notes)     { document.getElementById('voe-notes').value = s6.notes; autoResize(document.getElementById('voe-notes')); }
+    if (s6.role)      document.getElementById('voe-role').value = s6.role;
+    if (s6.date)      document.getElementById('voe-date').value = s6.date;
+    if (s6.result)    setVOE(s6.result);
+    if (s6.signature) { document.getElementById('n-voe').value = s6.signature; updateSig('voe', s6.signature); }
+
     setTimeout(autoResizeAll, 50);
     updateTypePrintLabel();
   }
@@ -1257,6 +1319,17 @@
 
   // Set initial height on why textareas via JS (not CSS) so autoResize can override freely
   document.querySelectorAll('.why-cell textarea').forEach(el => { el.style.height = '24px'; });
+
+  // ── VOE effectiveness toggle ──
+  let voeState = '';
+  function setVOE(val) {
+    if (voeState === val) val = '';
+    voeState = val;
+    document.getElementById('voe-eff-y').className = 'disp-btn' + (val === 'effective'   ? ' approved' : '');
+    document.getElementById('voe-eff-n').className = 'disp-btn' + (val === 'ineffective' ? ' rejected' : '');
+    document.getElementById('voe-ineffective-note').style.display = val === 'ineffective' ? 'block' : 'none';
+    scheduleSave();
+  }
 
   // ── Signature live-render ──
   function updateSig(dept, name) {
@@ -1440,6 +1513,11 @@
     document.getElementById('n-other-role').value = '';
     document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
     WHY_IDS.forEach(id => setWhyVal(id, ''));
+    voeState = '';
+    document.getElementById('voe-eff-y').className = 'disp-btn';
+    document.getElementById('voe-eff-n').className = 'disp-btn';
+    document.getElementById('voe-ineffective-note').style.display = 'none';
+    document.getElementById('sig-voe').textContent = '';
     localStorage.removeItem(SAVE_KEY);
     setSaveIndicator('Draft cleared', 'rgba(255,255,255,0.4)');
     addAction('st');
