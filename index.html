@@ -1442,7 +1442,7 @@
     btn.textContent = 'Generating…';
 
     try {
-      const { PDFDocument, StandardFonts, rgb } = PDFLib;
+      const { PDFDocument, StandardFonts, rgb, PDFName, PDFBool } = PDFLib;
       const fd = collectData();
       const h = fd.header || {};
       const s1 = fd.section1 || {};
@@ -1635,6 +1635,11 @@
       page.drawText('This is a controlled document.', {
         x: margin, y: margin - 10, size: 7, font: fontBold, color: red,
       });
+
+      // Tell PDF viewers (esp. Chrome's built-in viewer) to regenerate field
+      // appearances themselves — fixes checkboxes/text rendering as oversized
+      // blue highlight blocks that can obscure nearby labels.
+      form.acroForm.dict.set(PDFName.of('NeedAppearances'), PDFBool.True);
 
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
