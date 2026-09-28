@@ -4,8 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>F-6000 — Corrective Action Form | Fontaine Specialized</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=block" rel="stylesheet">
 <style>
   :root {
+    /* Signature font: web font first, then script fonts that ship with Windows/Mac.
+       Never falls back to generic "cursive" (which is Comic Sans on Windows). */
+    --sig-font: 'Great Vibes', 'Segoe Script', 'Brush Script MT', 'Lucida Handwriting', 'Apple Chancery', serif;
     --bg:       #F5F6F8;
     --surface:  #FFFFFF;
     --surface2: #F0F1F3;
@@ -650,7 +656,6 @@
   }
 
   /* ── SIGNATURE CELLS ── */
-  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
 
   .sig-cell {
     position: relative;
@@ -674,20 +679,33 @@
   }
   .sig-input:focus { border-bottom-color: var(--blue) !important; }
   .sig-display {
-    font-family: 'Dancing Script', cursive;
-    font-size: 22px;
     color: #1a3a6e;
-    text-align: center;
-    line-height: 1.2;
-    padding: 4px 2px 2px;
-    min-height: 34px;
-    letter-spacing: 0.02em;
+    padding: 2px 2px 0;
+    min-height: 40px;
     pointer-events: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
-  .sig-display.empty { min-height: 34px; }
+  .sig-display.empty { min-height: 40px; }
+  /* The signature is drawn as SVG sized to the name, so it shrinks to fit
+     whatever width the cell has — on screen and in Print / PDF. */
+  .sig-display svg {
+    display: block;
+    width: 100%;
+    height: 40px;
+    overflow: visible;
+  }
+  #sig-voe svg { height: 46px; }
+  .sig-display text {
+    font-family: var(--sig-font);
+    fill: #1a3a6e;
+  }
+  @media print {
+    .sig-display, .sig-display svg, .sig-display text {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .sig-display svg { height: 34px; }
+    #sig-voe svg { height: 40px; }
+  }
 
   /* ── STATUS BADGE in header ── */
   .car-status-badge {
@@ -1334,11 +1352,55 @@
   }
 
   // ── Signature live-render ──
+  const SIG_FAMILY = 'Great Vibes';
   function updateSig(dept, name) {
     const el = document.getElementById(`sig-${dept}`);
-    el.textContent = name.trim();
-    el.classList.toggle('empty', !name.trim());
+    const txt = (name || '').trim();
+    el.dataset.name = txt;
+    el.classList.toggle('empty', !txt);
+    if (!txt) { el.replaceChildren(); return; }
+    renderSig(el, txt);
+    // Re-measure once the signature font has actually loaded
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load(`40px "${SIG_FAMILY}"`, txt)
+        .then(() => { if (el.dataset.name === txt) renderSig(el, txt); })
+        .catch(() => {});
+    }
   }
+
+  // Draws the name as an SVG whose viewBox hugs the text. Because the SVG is
+  // width:100% with a fixed max height, short names render full size and long
+  // names shrink automatically to fit the cell — including in print layout.
+  function renderSig(el, txt) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', `Signed: ${txt}`);
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', '0');
+    t.setAttribute('y', '0');
+    t.setAttribute('font-size', '40');
+    t.textContent = txt;
+    svg.appendChild(t);
+    el.replaceChildren(svg);
+    let b = null;
+    try { b = t.getBBox(); } catch (e) {}
+    if (!b || !b.width) b = { x: 0, y: -34, width: txt.length * 17, height: 48 };
+    // Padding keeps script swashes from being clipped at the edges
+    const padX = b.width * 0.04 + 6;
+    const padY = b.height * 0.08;
+    svg.setAttribute('viewBox',
+      `${b.x - padX} ${b.y - padY} ${b.width + padX * 2} ${b.height + padY * 2}`);
+  }
+
+  function refreshAllSigs() {
+    document.querySelectorAll('.sig-display').forEach(el => {
+      if (el.dataset.name) renderSig(el, el.dataset.name);
+    });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refreshAllSigs);
+  window.addEventListener('beforeprint', refreshAllSigs);
 
   // ── Mutual-exclusive checkboxes ──
   function handleRecurring(val) {
@@ -1698,7 +1760,7 @@
           document.getElementById(`d-${dept}-n`).className = 'disp-btn';
           document.getElementById(`sc-${dept}`).classList.remove('na-state');
           document.getElementById(`dc-${dept}`).classList.remove('na-state');
-          document.getElementById(`sig-${dept}`).textContent = '';
+          updateSig(dept, '');
         });
         // Restore from imported data
         restoreData(data);
@@ -1735,7 +1797,7 @@
       document.getElementById(`d-${dept}-n`).className = 'disp-btn';
       document.getElementById(`sc-${dept}`).classList.remove('na-state');
       document.getElementById(`dc-${dept}`).classList.remove('na-state');
-      document.getElementById(`sig-${dept}`).textContent = '';
+      updateSig(dept, '');
     });
     document.getElementById('n-other-role').value = '';
     document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
@@ -1744,7 +1806,7 @@
     document.getElementById('voe-eff-y').className = 'disp-btn';
     document.getElementById('voe-eff-n').className = 'disp-btn';
     document.getElementById('voe-ineffective-note').style.display = 'none';
-    document.getElementById('sig-voe').textContent = '';
+    updateSig('voe', '');
     localStorage.removeItem(SAVE_KEY);
     setSaveIndicator('Draft cleared', 'rgba(255,255,255,0.4)');
     addAction('st');
